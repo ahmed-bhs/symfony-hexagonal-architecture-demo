@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-gray-50">
+<html lang="en" class="h-full bg-gray-50">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@
         {% endblock %}
 
         <style>
-            /* Animations personnalisées */
+            /* Custom animations */
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
@@ -107,7 +107,7 @@
                 animation: float 3s ease-in-out infinite;
             }
 
-            /* Hover effects améliorés */
+            /* Enhanced hover effects */
             .card-hover {
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
@@ -124,7 +124,7 @@
                 }
             }
 
-            /* Gradient animé */
+            /* Animated gradient */
             .gradient-animate {
                 background-size: 200% 200%;
                 animation: gradient 3s ease infinite;
@@ -214,29 +214,29 @@
                     </div>
 
                     <div class="hidden lg:flex items-center space-x-1">
-                        <a href="{{ path('app.home') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Accueil">
-                            <span class="relative z-10">Accueil</span>
+                        <a href="{{ path('app.home') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Home">
+                            <span class="relative z-10">Home</span>
                             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
                         </a>
-                        <a href="{{ path('app.cadeau.attribution.list_habitants') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Liste des habitants">
+                        <a href="{{ path('app.gift.attribution.list_residents') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Resident list">
                             <span class="relative z-10 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
-                                Habitants
+                                Residents
                             </span>
                             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
                         </a>
-                        <a href="{{ path('app.cadeau.attribution.list_cadeaux') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Liste des cadeaux">
+                        <a href="{{ path('app.gift.attribution.list_gifts') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Gift list">
                             <span class="relative z-10 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
                                 </svg>
-                                Cadeaux
+                                Gifts
                             </span>
                             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
                         </a>
-                        <a href="{{ path('app.architecture') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="Voir l'architecture">
+                        <a href="{{ path('app.architecture') }}" class="relative text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50 group" aria-label="View architecture">
                             <span class="relative z-10 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
@@ -245,11 +245,11 @@
                             </span>
                             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
                         </a>
-                        <a href="{{ path('app.cadeau.demande.form') }}" class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group btn-ripple ml-2" aria-label="Demander un cadeau">
+                        <a href="{{ path('app.gift.request.form') }}" class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group btn-ripple ml-2" aria-label="Request a gift">
                             <svg class="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            <span>Demander un Cadeau</span>
+                            <span>Request a Gift</span>
                         </a>
                     </div>
 
@@ -260,7 +260,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                             </svg>
                         </a>
-                        <a href="{{ path('app.cadeau.demande.form') }}" class="p-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800" aria-label="Demander un cadeau">
+                        <a href="{{ path('app.gift.request.form') }}" class="p-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800" aria-label="Request a gift">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -284,10 +284,10 @@
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
                             </svg>
-                            Architecture Hexagonale
+                            Hexagonal Architecture
                         </h3>
                         <p class="text-gray-300 text-sm">
-                            Démonstration complète des principes Ports & Adapters avec CQRS et DDD.
+                            Complete demonstration of Ports & Adapters principles with CQRS and DDD.
                         </p>
                     </div>
                     <div class="animate-fadeInUp" style="animation-delay: 0.1s">
@@ -309,7 +309,7 @@
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
                             </svg>
-                            Liens Utiles
+                            Useful Links
                         </h3>
                         <ul class="text-gray-300 text-sm space-y-2">
                             <li>
@@ -325,7 +325,7 @@
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                                     </svg>
-                                    Documentation Symfony
+                                    Symfony Documentation
                                 </a>
                             </li>
                         </ul>
@@ -333,9 +333,9 @@
                 </div>
                 <div class="border-t border-gray-700 pt-6 text-center">
                     <p class="text-gray-400 text-sm">
-                        Généré avec <span class="font-semibold text-blue-400 animate-pulse-soft">hexagonal-maker-bundle v2.0</span>
+                        Generated with <span class="font-semibold text-blue-400 animate-pulse-soft">hexagonal-maker-bundle v2.0</span>
                         <br>
-                        <span class="text-xs mt-2 inline-block">© 2026 - Score Architecture: <span class="text-green-400 font-bold">100/100</span> ⭐</span>
+                        <span class="text-xs mt-2 inline-block">© 2026 - Architecture Score: <span class="text-green-400 font-bold">100/100</span></span>
                     </p>
                 </div>
             </div>

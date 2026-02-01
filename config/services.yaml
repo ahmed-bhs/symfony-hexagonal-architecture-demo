@@ -9,11 +9,11 @@ services:
             - ../src/DependencyInjection/
             - ../src/Entity/
             - ../src/Kernel.php
-            - ../src/Cadeau/Attribution/Domain/Model/
-            - ../src/Cadeau/Attribution/Domain/ValueObject/
+            - ../src/Gift/Attribution/Domain/Model/
+            - ../src/Gift/Attribution/Domain/ValueObject/
             - ../src/Security/User/Domain/Model/
             - ../src/Security/User/Domain/ValueObject/
-    App\Cadeau\Attribution\UI\Http\Web\Controller\ListHabitantsController:
+    App\Gift\Attribution\Infrastructure\Adapter\In\Web\Controller\ListResidentsController:
         arguments:
             $queryBus: '@query.bus'
 
@@ -21,22 +21,22 @@ services:
     # These bindings connect Domain ports (interfaces) to Infrastructure adapters (implementations)
 
     # ID Generation Port (Shared)
-    App\Shared\Domain\Port\IdGeneratorInterface:
-        class: App\Shared\Infrastructure\Generator\UuidV7Generator
-        # ✅ Using UUID v7 (time-ordered, better for database performance)
+    App\Shared\Domain\Port\Out\IdGeneratorInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Generator\UuidV7Generator
+        # Using UUID v7 (time-ordered, better for database performance)
         # Can be swapped for:
         # - UlidGenerator (lexicographically sortable)
         # - SnowflakeGenerator (distributed systems)
         # - FakeIdGenerator (deterministic testing)
 
     # Domain Event Publisher Port (Shared)
-    App\Shared\Domain\Port\DomainEventPublisherInterface:
-        class: App\Shared\Infrastructure\Event\SymfonyDomainEventPublisher
+    App\Shared\Domain\Port\Out\DomainEventPublisherInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Event\SymfonyDomainEventPublisher
         arguments:
             $symfonyEventDispatcher: '@event_dispatcher'
-            $eventStore: '@App\Shared\Domain\Port\EventStoreInterface'
+            $eventStore: '@App\Shared\Domain\Port\Out\EventStoreInterface'
             $logger: '@logger'
-        # ✅ Adapter that publishes domain events via:
+        # Adapter that publishes domain events via:
         #    1. EventStore (audit trail, event sourcing)
         #    2. Symfony EventDispatcher (side effects: email, notifications)
         # This allows:
@@ -46,31 +46,31 @@ services:
         # - Easy testing with FakeDomainEventPublisher + InMemoryEventStore
 
     # EventStore Port (Shared)
-    App\Shared\Domain\Port\EventStoreInterface:
-        class: App\Shared\Infrastructure\Persistence\Doctrine\DoctrineEventStore
-        # ✅ Persists domain events in database for:
+    App\Shared\Domain\Port\Out\EventStoreInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineEventStore
+        # Persists domain events in database for:
         #    - Audit trail (complete business operations history)
         #    - Event replay (reconstruct aggregate state)
         #    - Analytics (query historical events)
         #    - Debugging (trace application behavior)
 
     # Repository Ports
-    App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface:
-        class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineHabitantRepository
-    App\Cadeau\Attribution\Domain\Port\CadeauRepositoryInterface:
-        class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineCadeauRepository
-    App\Cadeau\Attribution\Domain\Port\AttributionRepositoryInterface:
-        class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineAttributionRepository
-    App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface:
-        class: App\Cadeau\Demande\Infrastructure\Persistence\Doctrine\DoctrineDemandeCadeauRepository
+    App\Gift\Attribution\Domain\Port\Out\ResidentRepositoryInterface:
+        class: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineResidentRepository
+    App\Gift\Attribution\Domain\Port\Out\GiftRepositoryInterface:
+        class: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineGiftRepository
+    App\Gift\Attribution\Domain\Port\Out\GiftAttributionRepositoryInterface:
+        class: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineGiftAttributionRepository
+    App\Gift\Request\Domain\Port\Out\GiftRequestRepositoryInterface:
+        class: App\Gift\Request\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineGiftRequestRepository
 
     # Validation Port Implementations
-    # Note: AttribuerCadeauCommand uses Value Objects for self-validation
-    # Note: SoumettreDemandeCadeauCommand uses ValidationMiddleware for Symfony Validator
+    # Note: AttributeGiftCommand uses Value Objects for self-validation
+    # Note: SubmitGiftRequestCommand uses ValidationMiddleware for Symfony Validator
 
     # Messenger Middleware - Validation (Infrastructure)
     validation:
-        class: App\Shared\Infrastructure\Messenger\Middleware\ValidationMiddleware
+        class: App\Shared\Infrastructure\Adapter\Out\Messenger\Middleware\ValidationMiddleware
         arguments:
             $validator: '@validator'
         tags:
@@ -78,39 +78,39 @@ services:
 
     # Custom Validators (Infrastructure)
     # These validators delegate to Domain logic (no duplication of business rules)
-    App\Shared\Infrastructure\Validator\Constraint\CadeauDisponibleValidator:
+    App\Shared\Infrastructure\Adapter\Out\Validator\Constraint\GiftAvailableValidator:
         arguments:
-            $cadeauRepository: '@App\Cadeau\Attribution\Domain\Port\CadeauRepositoryInterface'
+            $giftRepository: '@App\Gift\Attribution\Domain\Port\Out\GiftRepositoryInterface'
         tags:
             - { name: 'validator.constraint_validator' }
 
     # Doctrine Listener (Infrastructure - auto-publishes domain events)
-    App\Shared\Infrastructure\Persistence\Doctrine\DomainEventPublisherListener:
+    App\Shared\Infrastructure\Adapter\Out\Persistence\Doctrine\DomainEventPublisherListener:
         arguments:
-            $eventPublisher: '@App\Shared\Domain\Port\DomainEventPublisherInterface'
+            $eventPublisher: '@App\Shared\Domain\Port\Out\DomainEventPublisherInterface'
         tags:
             - { name: doctrine.event_listener, event: postFlush }
-        # ✅ Automatically pulls events from aggregates after successful flush
+        # Automatically pulls events from aggregates after successful flush
         #    and publishes them via DomainEventPublisherInterface
 
     # EventSubscribers (Infrastructure layer - reacts to Domain events)
-    App\Cadeau\Demande\Infrastructure\EventSubscriber\GiftRequestSubmittedSubscriber:
+    App\Gift\Request\Infrastructure\Adapter\Out\EventSubscriber\GiftRequestSubmittedSubscriber:
         tags:
             - { name: kernel.event_subscriber }
-        # ✅ Reacts to GiftRequestSubmitted event to send confirmation email
+        # Reacts to GiftRequestSubmitted event to send confirmation email
 
-    App\Cadeau\Attribution\Infrastructure\EventSubscriber\GiftAttributedSubscriber:
+    App\Gift\Attribution\Infrastructure\Adapter\Out\EventSubscriber\GiftAttributedSubscriber:
         arguments:
             $messageBus: '@messenger.default_bus'
         tags:
             - { name: kernel.event_subscriber }
-        # ✅ Reacts to GiftAttributed event:
+        # Reacts to GiftAttributed event:
         #    - Sends confirmation email (sync)
         #    - Dispatches PDF generation to Messenger queue (async)
 
     # Kernel Event Listeners (Infrastructure - cross-cutting concerns)
-    App\Shared\Infrastructure\Http\EventListener\RequestIdListener:
-        # ✅ Automatically registered via AsEventListener attribute
+    App\Shared\Infrastructure\Adapter\Out\Http\EventListener\RequestIdListener:
+        # Automatically registered via AsEventListener attribute
         # Adds correlation ID to all HTTP requests for tracing
 
     # ========================================
@@ -118,30 +118,30 @@ services:
     # ========================================
 
     # User Repository Port
-    App\Security\User\Domain\Port\UserRepositoryInterface:
-        class: App\Security\User\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
+    App\Security\User\Domain\Port\Out\UserRepositoryInterface:
+        class: App\Security\User\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineUserRepository
 
     # Password Hasher Port
-    App\Security\User\Domain\Port\PasswordHasherInterface:
-        class: App\Security\User\Infrastructure\Security\SymfonyPasswordHasher
+    App\Security\User\Domain\Port\Out\PasswordHasherInterface:
+        class: App\Security\User\Infrastructure\Adapter\Out\Security\SymfonyPasswordHasher
         arguments:
             $hasherFactory: '@security.password_hasher_factory'
 
     # JWT Token Generator Port
-    App\Security\Authentication\Domain\Port\TokenGeneratorInterface:
-        class: App\Security\Authentication\Infrastructure\Jwt\FirebaseJwtTokenGenerator
+    App\Security\Authentication\Domain\Port\Out\TokenGeneratorInterface:
+        class: App\Security\Authentication\Infrastructure\Adapter\Out\Jwt\FirebaseJwtTokenGenerator
         arguments:
             $secret: '%env(JWT_SECRET)%'
             $issuer: '%env(JWT_ISSUER)%'
             $ttl: 3600  # 1 hour
 
     # JWT Authenticator (Symfony Security integration)
-    App\Security\Authentication\Infrastructure\Security\JwtAuthenticator:
+    App\Security\Authentication\Infrastructure\Adapter\Out\Security\JwtAuthenticator:
         arguments:
-            $tokenGenerator: '@App\Security\Authentication\Domain\Port\TokenGeneratorInterface'
-            $userRepository: '@App\Security\User\Domain\Port\UserRepositoryInterface'
+            $tokenGenerator: '@App\Security\Authentication\Domain\Port\Out\TokenGeneratorInterface'
+            $userRepository: '@App\Security\User\Domain\Port\Out\UserRepositoryInterface'
 
     # User Registered Event Subscriber
-    App\Security\User\Infrastructure\EventSubscriber\UserRegisteredSubscriber:
+    App\Security\User\Infrastructure\Adapter\Out\EventSubscriber\UserRegisteredSubscriber:
         tags:
             - { name: kernel.event_subscriber }

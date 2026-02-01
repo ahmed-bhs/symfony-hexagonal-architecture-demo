@@ -28,7 +28,7 @@ security:
             pattern: ^/api
             stateless: true
             custom_authenticators:
-                - App\Security\Authentication\Infrastructure\Security\JwtAuthenticator
+                - App\Security\Authentication\Infrastructure\Adapter\Out\Security\JwtAuthenticator
 
         # Legacy main firewall (keep for compatibility)
         main:

@@ -5,43 +5,95 @@ deptrac:
     - '#.*test.*#i'
 
   layers:
-    # 0a. Shared Domain - Code métier partagé (concepts DDD purs)
+    # ================================================================================
+    # SHARED MODULE - Cross-cutting concerns
+    # ================================================================================
+
+    # Shared Domain - Pure DDD concepts (AggregateRoot, DomainEvent, etc.)
     - name: SharedDomain
       collectors:
         - type: classLike
           value: App\\Shared\\Domain\\.*
 
-    # 0b. Shared Infrastructure - Code technique partagé
-    - name: SharedInfrastructure
+    # Shared Pagination Domain - Pagination value objects
+    - name: SharedPaginationDomain
       collectors:
         - type: classLike
-          value: App\\Shared\\Infrastructure\\.*
+          value: App\\Shared\\Pagination\\Domain\\.*
 
-    # 1. Domain Layer - Le coeur métier pur (bounded context specific)
-    - name: Domain
+    # Shared Search Domain - Search value objects
+    - name: SharedSearchDomain
       collectors:
         - type: classLike
-          value: App\\Cadeau\\.*\\Domain\\.*
+          value: App\\Shared\\Search\\Domain\\.*
 
-    # 2. Application Layer - Cas d'usage (CQRS: Commands & Queries)
+    # Shared Infrastructure Adapter Out - Technical adapters (EventPublisher, Generator, etc.)
+    - name: SharedAdapterOut
+      collectors:
+        - type: classLike
+          value: App\\Shared\\Infrastructure\\Adapter\\Out\\.*
+
+    # ================================================================================
+    # BOUNDED CONTEXTS - Hexagonal Architecture Layers
+    # ================================================================================
+
+    # Domain Port IN (Primary/Driving) - Use Case Interfaces
+    - name: DomainPortIn
+      collectors:
+        - type: classLike
+          value: App\\Gift\\.*\\Domain\\Port\\In\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Domain\\Port\\In\\.*
+
+    # Domain Port OUT (Secondary/Driven) - Repository Interfaces, External Service Interfaces
+    - name: DomainPortOut
+      collectors:
+        - type: classLike
+          value: App\\Gift\\.*\\Domain\\Port\\Out\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Domain\\Port\\Out\\.*
+
+    # Domain Core - Models, ValueObjects, Events (no ports)
+    - name: DomainCore
+      collectors:
+        - type: classLike
+          value: App\\Gift\\.*\\Domain\\Model\\.*
+        - type: classLike
+          value: App\\Gift\\.*\\Domain\\ValueObject\\.*
+        - type: classLike
+          value: App\\Gift\\.*\\Domain\\Event\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Domain\\Model\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Domain\\ValueObject\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Domain\\Event\\.*
+
+    # Application Layer - Commands, Queries, Handlers, DTOs, Services
     - name: Application
       collectors:
         - type: classLike
-          value: App\\Cadeau\\.*\\Application\\.*
+          value: App\\Gift\\.*\\Application\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Application\\.*
 
-    # 3. Infrastructure Layer - Adaptateurs techniques (Doctrine, etc.)
-    - name: Infrastructure
+    # Adapter IN (Driving) - Controllers, CLI, Consumers
+    - name: AdapterIn
       collectors:
         - type: classLike
-          value: App\\Cadeau\\.*\\Infrastructure\\.*
+          value: App\\Gift\\.*\\Infrastructure\\Adapter\\In\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Infrastructure\\Adapter\\In\\.*
 
-    # 4. UI Layer - Présentation (Controllers, Forms, etc.)
-    - name: UI
+    # Adapter OUT (Driven) - Repositories, External Services, Event Subscribers
+    - name: AdapterOut
       collectors:
         - type: classLike
-          value: App\\Cadeau\\.*\\UI\\.*
+          value: App\\Gift\\.*\\Infrastructure\\Adapter\\Out\\.*
+        - type: classLike
+          value: App\\Security\\.*\\Infrastructure\\Adapter\\Out\\.*
 
-    # 5. Symfony Framework (Controllers globaux, DataFixtures, etc.)
+    # Symfony Framework (Global controllers, DataFixtures, Kernel)
     - name: Symfony
       collectors:
         - type: classLike
@@ -53,67 +105,101 @@ deptrac:
 
   ruleset:
     # ================================================================================
-    # ARCHITECTURE HEXAGONALE - RÈGLES DE DÉPENDANCES
-    # IMPORTANT : Dans Deptrac, on liste les dépendances AUTORISÉES
-    # Si une couche n'est pas listée = elle est INTERDITE
+    # HEXAGONAL ARCHITECTURE - DEPENDENCY RULES
+    # ================================================================================
+    #
+    # ARCHITECTURE OVERVIEW:
+    #
+    #                     ┌─────────────────────────────────┐
+    #                     │           DOMAIN                │
+    #    DRIVING          │  ┌───────────────────────────┐  │         DRIVEN
+    #    (IN)             │  │    Models, ValueObjects   │  │         (OUT)
+    #                     │  │    Events, Services       │  │
+    # ┌──────────┐        │  └───────────────────────────┘  │        ┌──────────┐
+    # │Controller│───────►│  Port IN      Port OUT         │───────►│  DB      │
+    # │  CLI     │        │  (UseCase)    (Repository)     │        │  API     │
+    # │  Queue   │        │                                │        │  Email   │
+    # └──────────┘        └─────────────────────────────────┘        └──────────┘
+    #  Adapter IN                                                    Adapter OUT
+    #
     # ================================================================================
 
-    # Shared Domain - ✅ Ne dépend de PERSONNE (concepts DDD purs)
-    SharedDomain: []
+    # SHARED LAYERS - Foundation
+    SharedDomain: []                    # Pure DDD - depends on nothing
+    SharedPaginationDomain: []          # Value objects - depends on nothing
+    SharedSearchDomain: []              # Value objects - depends on nothing
 
-    # Shared Infrastructure - ✅ Peut dépendre de SharedDomain uniquement
-    SharedInfrastructure:
-      - SharedDomain  # Implémente les ports du Shared Domain
+    SharedAdapterOut:                   # Technical adapters
+      - SharedDomain                    # Implements shared domain ports
+      - DomainPortOut                   # Validators use domain repository ports
+      - DomainCore                      # Validators use domain VOs
 
-    # Domain Layer - ✅ Peut UNIQUEMENT dépendre de SharedDomain
-    # ⚠️ IMPORTANT: Domain ne peut PAS dépendre de SharedInfrastructure !
-    Domain:
-      - SharedDomain  # Domain PEUT utiliser concepts DDD partagés (AggregateRoot, DomainEvent)
+    # DOMAIN LAYER - The Core
+    DomainPortIn:                        # Use case interfaces
+      - Application                      # Port IN references Commands/Queries (Application DTOs)
+      - DomainCore                       # Port IN can reference Domain VOs
+    DomainPortOut:                       # Repository interfaces
+      - DomainCore                       # Repositories return Domain models/VOs
+      - SharedDomain                     # Can use shared domain concepts
+      - SharedPaginationDomain           # Can use pagination VOs
+      - SharedSearchDomain               # Can use search VOs
 
-    # Application Layer - ✅ Peut dépendre de Domain et SharedDomain
+    DomainCore:                         # Domain models, VOs, events
+      - SharedDomain                    # Can use shared concepts (AggregateRoot, etc.)
+      - SharedPaginationDomain          # Can use pagination VOs
+      - SharedSearchDomain              # Can use search VOs
+      - DomainPortOut                   # Domain can reference Port OUT interfaces
+
+    # APPLICATION LAYER - Use Cases
     Application:
-      - Domain        # Application PEUT dépendre de Domain (Ports, Models, ValueObjects)
-      - SharedDomain  # Application PEUT utiliser SharedDomain (DomainEventPublisher port)
+      - DomainCore                      # Depends on Domain models, VOs
+      - DomainPortIn                    # Implements Port IN interfaces
+      - DomainPortOut                   # Uses Port OUT interfaces (repositories)
+      - SharedDomain                    # Uses shared concepts
+      - SharedPaginationDomain          # Uses pagination VOs in queries
+      - SharedSearchDomain              # Uses search VOs in queries
 
-    # Infrastructure Layer - ✅ Peut dépendre de Domain, SharedDomain, SharedInfrastructure
-    Infrastructure:
-      - Domain               # Infrastructure PEUT dépendre de Domain (implémente les Ports)
-      - SharedDomain         # Infrastructure PEUT utiliser SharedDomain (ports)
-      - SharedInfrastructure # Infrastructure PEUT utiliser SharedInfrastructure (adapters)
+    # ADAPTER IN (Driving) - Entry Points
+    AdapterIn:
+      - Application                     # Calls Application layer (Commands, Queries)
+      - DomainCore                      # Can use Domain VOs for request validation
+      - DomainPortIn                    # Can reference Port IN (for documentation)
+      - SharedAdapterOut                # Can use shared validators
 
-    # UI Layer - ✅ Peut dépendre de Application et Symfony
-    # Ne peut PAS dépendre directement de Domain ou Infrastructure
-    UI:
-      - Application  # UI PEUT dépendre d'Application (Commands, Queries, Responses)
-      - Symfony      # UI PEUT utiliser Symfony (Forms, Controllers, etc.)
+    # ADAPTER OUT (Driven) - Technical Implementations
+    AdapterOut:
+      - DomainCore                      # Implements Domain repositories
+      - DomainPortOut                   # Implements Port OUT interfaces
+      - SharedDomain                    # Uses shared domain concepts
+      - SharedPaginationDomain          # Uses pagination VOs
+      - SharedSearchDomain              # Uses search VOs
+      - SharedAdapterOut                # Uses shared infrastructure
 
-    # Symfony Layer - ✅ Peut dépendre de Domain, Application, Infrastructure, Shared
-    #
-    # JUSTIFICATION : Les DataFixtures sont un cas spécial acceptable
-    # - Ce sont des données de test/seed, pas du code métier
-    # - Elles doivent créer des entités Domain directement
-    # - Alternative : créer des Commands spécifiques → complexité inutile
-    #
-    # IMPORTANT : Les Controllers (HomeController, etc.) respectent CQRS
-    # et passent par Application, ils n'accèdent PAS directement au Domain
+    # SYMFONY LAYER - Framework Integration
     Symfony:
-      - Domain               # Pour DataFixtures uniquement (données de test)
-      - Application          # Pour Controllers (CQRS)
-      - Infrastructure       # Pour configuration Doctrine, services
-      - SharedDomain         # Peut utiliser Shared Domain
-      - SharedInfrastructure # Peut utiliser Shared Infrastructure
+      - DomainCore                      # DataFixtures need Domain models
+      - Application                     # Controllers use Application layer
+      - AdapterIn                       # Can wire adapters
+      - AdapterOut                      # Can wire adapters
+      - SharedDomain                    # Uses shared domain
+      - SharedAdapterOut                # Uses shared infrastructure
 
   formatters:
     graphviz:
-      # Génère un graphique visuel des dépendances entre layers
       groups:
         Domain:
-          - Domain
+          - DomainCore
+          - DomainPortIn
+          - DomainPortOut
         Application:
           - Application
-        Infrastructure:
-          - Infrastructure
-        UI:
-          - UI
+        Adapters:
+          - AdapterIn
+          - AdapterOut
+        Shared:
+          - SharedDomain
+          - SharedPaginationDomain
+          - SharedSearchDomain
+          - SharedAdapterOut
         Framework:
           - Symfony

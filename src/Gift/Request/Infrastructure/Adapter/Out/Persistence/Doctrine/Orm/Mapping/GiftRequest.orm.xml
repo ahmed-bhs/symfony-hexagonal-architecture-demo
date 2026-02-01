@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Gift\Request\Domain\Model\GiftRequest" table="gift_request">
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="requesterName" type="string" column="requester_name" length="100"/>
+        <field name="requesterEmail" type="email_vo" column="requester_email" length="255"/>
+        <field name="requesterPhone" type="string" column="requester_phone" length="20"/>
+        <field name="requestedGift" type="string" column="requested_gift" length="200"/>
+        <field name="motivation" type="text" column="motivation"/>
+        <field name="status" type="string" column="status" length="20"/>
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+    </entity>
+
+</doctrine-mapping>

@@ -1,0 +1,41 @@
+App\Gift\Request\Application\Command\SubmitGiftRequest\SubmitGiftRequestCommand:
+    properties:
+        requesterName:
+            - NotBlank:
+                message: 'Requester name cannot be empty'
+            - Length:
+                min: 2
+                max: 100
+                minMessage: 'Name must be at least {{ limit }} characters'
+                maxMessage: 'Name cannot exceed {{ limit }} characters'
+
+        requesterEmail:
+            - NotBlank:
+                message: 'Email cannot be empty'
+            - Email:
+                message: 'The email {{ value }} is not valid'
+
+        requesterPhone:
+            - NotBlank:
+                message: 'Phone number cannot be empty'
+            - Regex:
+                pattern: '/^(\+33|0)[1-9](\d{2}){4}$/'
+                message: 'Phone number must be a valid French format'
+
+        requestedGift:
+            - NotBlank:
+                message: 'Requested gift cannot be empty'
+            - Length:
+                min: 3
+                max: 200
+                minMessage: 'Requested gift must be at least {{ limit }} characters'
+                maxMessage: 'Requested gift cannot exceed {{ limit }} characters'
+
+        motivation:
+            - NotBlank:
+                message: 'Motivation cannot be empty'
+            - Length:
+                min: 10
+                max: 1000
+                minMessage: 'Motivation must be at least {{ limit }} characters'
+                maxMessage: 'Motivation cannot exceed {{ limit }} characters'

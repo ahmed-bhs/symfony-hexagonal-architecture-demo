@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Gift\Attribution\Domain\Model\GiftAttribution" table="gift_attribution">
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="residentId" type="string" column="resident_id" length="36"/>
+        <field name="giftId" type="string" column="gift_id" length="36"/>
+        <field name="attributedAt" type="datetime_immutable" column="attributed_at"/>
+    </entity>
+
+</doctrine-mapping>

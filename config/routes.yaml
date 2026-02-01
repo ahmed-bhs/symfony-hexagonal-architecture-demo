@@ -1,10 +1,10 @@
-cadeau_attribution_controllers:
+gift_attribution_controllers:
     resource:
-        path: ../src/Cadeau/Attribution/UI/Http/Web/Controller/
-        namespace: App\Cadeau\Attribution\UI\Http\Web\Controller
+        path: ../src/Gift/Attribution/Infrastructure/Adapter/In/Web/Controller/
+        namespace: App\Gift\Attribution\Infrastructure\Adapter\In\Web\Controller
     type: attribute
-cadeau_demande_controllers:
+gift_request_controllers:
     resource:
-        path: ../src/Cadeau/Demande/UI/Http/Web/Controller/
-        namespace: App\Cadeau\Demande\UI\Http\Web\Controller
+        path: ../src/Gift/Request/Infrastructure/Adapter/In/Web/Controller/
+        namespace: App\Gift\Request\Infrastructure\Adapter\In\Web\Controller
     type: attribute

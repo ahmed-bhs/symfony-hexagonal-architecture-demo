@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Gestion des Cadeaux{% endblock %}
+{% block title %}Home - Gift Management{% endblock %}
 
 {% block body %}
 <div class="bg-gradient-to-b from-blue-50 to-white">
@@ -13,10 +13,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-gray-900 mb-4">
-                Gestion des Cadeaux
+                Gift Management
             </h1>
             <p class="text-xl text-gray-600 mb-2">
-                Application de démonstration de l'architecture hexagonale avec Symfony
+                Hexagonal architecture demo application with Symfony
             </p>
             <p class="text-sm text-gray-500">
                 Powered by hexagonal-maker-bundle v2.0
@@ -32,7 +32,7 @@
             <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
-            🔄 Flux Architecture Hexagonale - Page d'Accueil
+            Hexagonal Architecture Flow - Home Page
         </h2>
         <div class="bg-white rounded-lg p-6 mb-4">
             <div class="grid grid-cols-1 lg:grid-cols-7 gap-3">
@@ -42,7 +42,7 @@
                         <span class="inline-block bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">1. UI</span>
                     </div>
                     <h3 class="font-bold text-amber-800 mb-2 text-sm">HomeController</h3>
-                    <p class="text-xs text-gray-700 mb-2">Reçoit la requête HTTP</p>
+                    <p class="text-xs text-gray-700 mb-2">Receives HTTP request</p>
                     <div class="bg-white rounded p-2 text-xs font-mono">
                         <code class="text-amber-700 break-words">dispatch(Query)</code>
                     </div>
@@ -50,8 +50,8 @@
 
                 {# Arrow with label #}
                 <div class="flex flex-col items-center justify-center">
-                    <div class="text-2xl text-gray-400">→</div>
-                    <div class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 rounded">dépend</div>
+                    <div class="text-2xl text-gray-400">-></div>
+                    <div class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 rounded">depends</div>
                 </div>
 
                 {# Step 2: Application Layer - Query #}
@@ -59,17 +59,17 @@
                     <div class="text-center mb-2">
                         <span class="inline-block bg-cyan-500 text-white text-xs font-bold px-2 py-1 rounded-full">2. APP</span>
                     </div>
-                    <h3 class="font-bold text-cyan-800 mb-1 text-xs">RecupererStatistiques<br>QueryHandler</h3>
-                    <p class="text-xs text-gray-700 mb-2">Utilise les Ports</p>
+                    <h3 class="font-bold text-cyan-800 mb-1 text-xs">GetStatistics<br>QueryHandler</h3>
+                    <p class="text-xs text-gray-700 mb-2">Uses Ports</p>
                     <div class="bg-white rounded p-2 text-xs font-mono">
-                        <code class="text-cyan-700 text-[10px] break-words">HabitantRepository<br>Interface</code>
+                        <code class="text-cyan-700 text-[10px] break-words">ResidentRepository<br>Interface</code>
                     </div>
                 </div>
 
                 {# Arrow with label #}
                 <div class="flex flex-col items-center justify-center">
-                    <div class="text-2xl text-gray-400">→</div>
-                    <div class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 rounded">utilise</div>
+                    <div class="text-2xl text-gray-400">-></div>
+                    <div class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 rounded">uses</div>
                 </div>
 
                 {# Step 3: Domain Port #}
@@ -77,8 +77,8 @@
                     <div class="text-center mb-2">
                         <span class="inline-block bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">3. PORT</span>
                     </div>
-                    <h3 class="font-bold text-blue-800 mb-1 text-xs">HabitantRepository<br>Interface</h3>
-                    <p class="text-xs text-gray-700 mb-2">Interface Domain</p>
+                    <h3 class="font-bold text-blue-800 mb-1 text-xs">ResidentRepository<br>Interface</h3>
+                    <p class="text-xs text-gray-700 mb-2">Domain Interface</p>
                     <div class="bg-white rounded p-2 text-xs font-mono">
                         <code class="text-blue-700 text-[10px]">findAll()</code>
                     </div>
@@ -86,8 +86,8 @@
 
                 {# Arrow with label #}
                 <div class="flex flex-col items-center justify-center">
-                    <div class="text-2xl text-green-500">←</div>
-                    <div class="text-[9px] font-bold text-green-700 bg-green-50 px-1 rounded">implémente</div>
+                    <div class="text-2xl text-green-500"><-</div>
+                    <div class="text-[9px] font-bold text-green-700 bg-green-50 px-1 rounded">implements</div>
                 </div>
 
                 {# Step 4: Infrastructure Adapter #}
@@ -95,8 +95,8 @@
                     <div class="text-center mb-2">
                         <span class="inline-block bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">4. ADAPTER</span>
                     </div>
-                    <h3 class="font-bold text-green-800 mb-1 text-xs">DoctrineHabitant<br>Repository</h3>
-                    <p class="text-xs text-gray-700 mb-2">Implémente le Port</p>
+                    <h3 class="font-bold text-green-800 mb-1 text-xs">DoctrineResident<br>Repository</h3>
+                    <p class="text-xs text-gray-700 mb-2">Implements the Port</p>
                     <div class="bg-white rounded p-2 text-xs font-mono">
                         <code class="text-green-700 text-[10px]">Doctrine ORM</code>
                     </div>
@@ -110,7 +110,7 @@
                 <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
-                Respecte l'architecture hexagonale
+                Follows hexagonal architecture
             </h3>
             <div class="text-sm text-gray-800 space-y-4">
                 {# Step 1 #}
@@ -124,7 +124,7 @@
                             <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
-                            <code class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded font-semibold text-xs">RecupererStatistiquesQuery</code>
+                            <code class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded font-semibold text-xs">GetStatisticsQuery</code>
                         </div>
                     </div>
                 </div>
@@ -141,9 +141,9 @@
                     <div class="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-xs">2</div>
                     <div class="flex-1">
                         <div class="mb-2">
-                            <code class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded font-semibold text-xs">RecupererStatistiquesQueryHandler</code>
+                            <code class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded font-semibold text-xs">GetStatisticsQueryHandler</code>
                             <span class="text-cyan-600 font-medium ml-1">(Application)</span>
-                            <span class="text-gray-500 ml-1">utilise les</span>
+                            <span class="text-gray-500 ml-1">uses the</span>
                             <span class="font-bold text-blue-700 ml-1">Ports</span>
                             <span class="text-gray-500">:</span>
                         </div>
@@ -152,13 +152,13 @@
                                 <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
                                 </svg>
-                                <code class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-medium">HabitantRepositoryInterface</code>
+                                <code class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-medium">ResidentRepositoryInterface</code>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
                                 </svg>
-                                <code class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-medium">CadeauRepositoryInterface</code>
+                                <code class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-medium">GiftRepositoryInterface</code>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
@@ -182,9 +182,9 @@
                     <div class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xs">3</div>
                     <div class="flex-1">
                         <div class="mb-2">
-                            <span class="text-gray-700 font-medium">L'</span>
+                            <span class="text-gray-700 font-medium">The</span>
                             <span class="text-green-700 font-bold">Infrastructure</span>
-                            <span class="text-gray-500 ml-1">fournit les</span>
+                            <span class="text-gray-500 ml-1">provides the</span>
                             <span class="font-bold text-green-700 ml-1">Adapters</span>
                             <span class="text-gray-400 text-xs ml-1">(via Dependency Injection)</span>
                             <span class="text-gray-500">:</span>
@@ -194,30 +194,30 @@
                                 <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <code class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">DoctrineHabitantRepository</code>
-                                <span class="text-green-600 text-xs">implémente</span>
+                                <code class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">DoctrineResidentRepository</code>
+                                <span class="text-green-600 text-xs">implements</span>
                                 <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                 </svg>
-                                <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs">HabitantRepositoryInterface</code>
+                                <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs">ResidentRepositoryInterface</code>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <code class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">DoctrineCadeauRepository</code>
-                                <span class="text-green-600 text-xs">implémente</span>
+                                <code class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">DoctrineGiftRepository</code>
+                                <span class="text-green-600 text-xs">implements</span>
                                 <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                 </svg>
-                                <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs">CadeauRepositoryInterface</code>
+                                <code class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs">GiftRepositoryInterface</code>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                 </svg>
                                 <code class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">DoctrineAttributionRepository</code>
-                                <span class="text-green-600 text-xs">implémente</span>
+                                <span class="text-green-600 text-xs">implements</span>
                                 <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                 </svg>
@@ -235,9 +235,9 @@
                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
                             <div>
-                                <p class="font-bold text-gray-900 mb-1">Principe clé : Dependency Inversion</p>
+                                <p class="font-bold text-gray-900 mb-1">Key Principle: Dependency Inversion</p>
                                 <p class="text-sm text-gray-700">
-                                    <span class="font-semibold text-blue-700">Aucune dépendance directe</span> entre
+                                    <span class="font-semibold text-blue-700">No direct dependency</span> between
                                     <code class="bg-amber-50 text-amber-700 px-1 py-0.5 rounded text-xs">UI</code>
                                     <svg class="w-3 h-3 inline text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -245,7 +245,7 @@
                                     <code class="bg-green-50 text-green-700 px-1 py-0.5 rounded text-xs">Infrastructure</code>
                                 </p>
                                 <p class="text-sm text-gray-600 mt-1">
-                                    Tout passe par les <span class="font-semibold text-blue-600">interfaces (Ports)</span> du Domain !
+                                    Everything goes through the <span class="font-semibold text-blue-600">interfaces (Ports)</span> of the Domain!
                                 </p>
                             </div>
                         </div>
@@ -259,7 +259,7 @@
 {# Statistics Cards #}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {# Habitants Card #}
+        {# Residents Card #}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all hover:-translate-y-1">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -270,9 +270,9 @@
                     </div>
                     <span class="text-3xl font-bold text-gray-900">{{ stats.totalHabitants }}</span>
                 </div>
-                <h3 class="text-gray-600 font-medium mb-3">Habitants</h3>
-                <a href="{{ path('app.cadeau.attribution.list_habitants') }}" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700">
-                    Voir la liste
+                <h3 class="text-gray-600 font-medium mb-3">Residents</h3>
+                <a href="{{ path('app.gift.attribution.list_residents') }}" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700">
+                    View list
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        {# Cadeaux Card #}
+        {# Gifts Card #}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all hover:-translate-y-1">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -291,9 +291,9 @@
                     </div>
                     <span class="text-3xl font-bold text-gray-900">{{ stats.totalCadeaux }}</span>
                 </div>
-                <h3 class="text-gray-600 font-medium mb-3">Cadeaux</h3>
-                <a href="{{ path('app.cadeau.attribution.list_cadeaux') }}" class="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700">
-                    Voir le catalogue
+                <h3 class="text-gray-600 font-medium mb-3">Gifts</h3>
+                <a href="{{ path('app.gift.attribution.list_gifts') }}" class="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700">
+                    View catalog
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -313,11 +313,11 @@
                     <span class="text-3xl font-bold text-gray-900">{{ stats.totalAttributions }}</span>
                 </div>
                 <h3 class="text-gray-600 font-medium mb-3">Attributions</h3>
-                <span class="text-sm text-gray-500">Cadeaux distribués</span>
+                <span class="text-sm text-gray-500">Gifts distributed</span>
             </div>
         </div>
 
-        {# Demande Card #}
+        {# Request Card #}
         <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl shadow-sm border border-pink-200 hover:shadow-lg transition-all hover:-translate-y-1">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -327,9 +327,9 @@
                         </svg>
                     </div>
                 </div>
-                <h3 class="text-gray-700 font-medium mb-3">Faire une demande</h3>
-                <a href="{{ path('app.cadeau.demande.form') }}" class="inline-flex items-center text-sm font-medium text-pink-700 hover:text-pink-800">
-                    Formulaire de demande
+                <h3 class="text-gray-700 font-medium mb-3">Make a request</h3>
+                <a href="{{ path('app.gift.request.form') }}" class="inline-flex items-center text-sm font-medium text-pink-700 hover:text-pink-800">
+                    Request form
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -338,7 +338,7 @@
         </div>
     </div>
 
-    {# Habitants by Category #}
+    {# Residents by Category #}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-12">
         <div class="border-b border-gray-200 px-6 py-4">
             <h2 class="text-lg font-semibold text-gray-900 flex items-center">
@@ -346,25 +346,25 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
                 </svg>
-                Répartition des Habitants par Catégorie
+                Resident Distribution by Category
             </h2>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="text-center p-6 bg-blue-50 rounded-lg border-2 border-blue-200 hover:scale-105 transition-transform">
-                    <div class="text-4xl font-bold text-blue-600 mb-2">{{ stats.habitantsEnfants }}</div>
-                    <h3 class="text-gray-700 font-medium">Enfants</h3>
-                    <p class="text-sm text-gray-500">Moins de 18 ans</p>
+                    <div class="text-4xl font-bold text-blue-600 mb-2">{{ stats.childResidents }}</div>
+                    <h3 class="text-gray-700 font-medium">Children</h3>
+                    <p class="text-sm text-gray-500">Under 18</p>
                 </div>
                 <div class="text-center p-6 bg-green-50 rounded-lg border-2 border-green-200 hover:scale-105 transition-transform">
-                    <div class="text-4xl font-bold text-green-600 mb-2">{{ stats.habitantsAdultes }}</div>
-                    <h3 class="text-gray-700 font-medium">Adultes</h3>
-                    <p class="text-sm text-gray-500">18-64 ans</p>
+                    <div class="text-4xl font-bold text-green-600 mb-2">{{ stats.adultResidents }}</div>
+                    <h3 class="text-gray-700 font-medium">Adults</h3>
+                    <p class="text-sm text-gray-500">18-64 years</p>
                 </div>
                 <div class="text-center p-6 bg-amber-50 rounded-lg border-2 border-amber-200 hover:scale-105 transition-transform">
-                    <div class="text-4xl font-bold text-amber-600 mb-2">{{ stats.habitantsSeniors }}</div>
+                    <div class="text-4xl font-bold text-amber-600 mb-2">{{ stats.seniorResidents }}</div>
                     <h3 class="text-gray-700 font-medium">Seniors</h3>
-                    <p class="text-sm text-gray-500">65 ans et plus</p>
+                    <p class="text-sm text-gray-500">65 and over</p>
                 </div>
             </div>
         </div>
@@ -377,83 +377,83 @@
                 <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                 </svg>
-                📐 Les 4 Couches de l'Architecture Hexagonale
+                The 4 Layers of Hexagonal Architecture
             </h2>
         </div>
         <div class="p-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <div class="bg-white rounded-lg shadow-md border-4 border-blue-300 p-6 hover:shadow-xl transition-shadow">
                     <div class="text-center mb-3">
-                        <span class="text-3xl">🎯</span>
+                        <span class="text-3xl">Target</span>
                     </div>
                     <h3 class="text-xl font-bold text-blue-700 mb-3 text-center">Domain</h3>
                     <div class="text-sm text-gray-700 space-y-2">
-                        <p class="font-semibold">Cœur métier pur</p>
-                        <p class="text-xs">• Entités (Habitant, Cadeau)</p>
-                        <p class="text-xs">• ValueObjects (Age, Email)</p>
-                        <p class="text-xs">• Ports (Interfaces)</p>
-                        <p class="text-xs bg-blue-50 p-1 rounded">❌ Aucune dépendance externe</p>
+                        <p class="font-semibold">Pure business core</p>
+                        <p class="text-xs">- Entities (Resident, Gift)</p>
+                        <p class="text-xs">- ValueObjects (Age, Email)</p>
+                        <p class="text-xs">- Ports (Interfaces)</p>
+                        <p class="text-xs bg-blue-50 p-1 rounded">No external dependencies</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md border-4 border-cyan-300 p-6 hover:shadow-xl transition-shadow">
                     <div class="text-center mb-3">
-                        <span class="text-3xl">⚙️</span>
+                        <span class="text-3xl">Gear</span>
                     </div>
                     <h3 class="text-xl font-bold text-cyan-700 mb-3 text-center">Application</h3>
                     <div class="text-sm text-gray-700 space-y-2">
-                        <p class="font-semibold">Cas d'usage (CQRS)</p>
-                        <p class="text-xs">• Commands (écriture)</p>
-                        <p class="text-xs">• Queries (lecture)</p>
-                        <p class="text-xs">• Handlers (orchestration)</p>
-                        <p class="text-xs bg-cyan-50 p-1 rounded">✅ Dépend de Domain/Port uniquement</p>
+                        <p class="font-semibold">Use cases (CQRS)</p>
+                        <p class="text-xs">- Commands (write)</p>
+                        <p class="text-xs">- Queries (read)</p>
+                        <p class="text-xs">- Handlers (orchestration)</p>
+                        <p class="text-xs bg-cyan-50 p-1 rounded">Depends on Domain/Port only</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md border-4 border-green-300 p-6 hover:shadow-xl transition-shadow">
                     <div class="text-center mb-3">
-                        <span class="text-3xl">🔌</span>
+                        <span class="text-3xl">Plug</span>
                     </div>
                     <h3 class="text-xl font-bold text-green-700 mb-3 text-center">Infrastructure</h3>
                     <div class="text-sm text-gray-700 space-y-2">
-                        <p class="font-semibold">Adaptateurs techniques</p>
-                        <p class="text-xs">• Doctrine ORM</p>
-                        <p class="text-xs">• Repositories concrets</p>
-                        <p class="text-xs">• Custom Types</p>
-                        <p class="text-xs bg-green-50 p-1 rounded">✅ Implémente les Ports</p>
+                        <p class="font-semibold">Technical adapters</p>
+                        <p class="text-xs">- Doctrine ORM</p>
+                        <p class="text-xs">- Concrete repositories</p>
+                        <p class="text-xs">- Custom Types</p>
+                        <p class="text-xs bg-green-50 p-1 rounded">Implements the Ports</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md border-4 border-amber-300 p-6 hover:shadow-xl transition-shadow">
                     <div class="text-center mb-3">
-                        <span class="text-3xl">🖥️</span>
+                        <span class="text-3xl">Screen</span>
                     </div>
-                    <h3 class="text-xl font-bold text-amber-700 mb-3 text-center">UI (Présentation)</h3>
+                    <h3 class="text-xl font-bold text-amber-700 mb-3 text-center">UI (Presentation)</h3>
                     <div class="text-sm text-gray-700 space-y-2">
-                        <p class="font-semibold">Interface utilisateur</p>
-                        <p class="text-xs">• Controllers Web</p>
-                        <p class="text-xs">• Formulaires Symfony</p>
-                        <p class="text-xs">• Templates Twig</p>
-                        <p class="text-xs bg-amber-50 p-1 rounded">✅ Dépend d'Application uniquement</p>
+                        <p class="font-semibold">User interface</p>
+                        <p class="text-xs">- Web Controllers</p>
+                        <p class="text-xs">- Symfony Forms</p>
+                        <p class="text-xs">- Twig Templates</p>
+                        <p class="text-xs bg-amber-50 p-1 rounded">Depends on Application only</p>
                     </div>
                 </div>
             </div>
 
             {# Dependency Direction #}
             <div class="bg-white rounded-lg p-6 border-2 border-dashed border-gray-300">
-                <h4 class="font-bold text-gray-900 mb-3 text-center">🔄 Direction des Dépendances</h4>
+                <h4 class="font-bold text-gray-900 mb-3 text-center">Dependency Direction</h4>
                 <div class="flex items-center justify-center space-x-2 text-sm">
                     <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded font-semibold">UI</span>
-                    <span class="text-2xl">→</span>
+                    <span class="text-2xl">-></span>
                     <span class="px-3 py-1 bg-cyan-100 text-cyan-800 rounded font-semibold">Application</span>
-                    <span class="text-2xl">→</span>
+                    <span class="text-2xl">-></span>
                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded font-semibold">Domain</span>
-                    <span class="text-2xl">←</span>
+                    <span class="text-2xl"><-</span>
                     <span class="px-3 py-1 bg-green-100 text-green-800 rounded font-semibold">Infrastructure</span>
                 </div>
                 <p class="text-xs text-center text-gray-600 mt-3">
-                    Infrastructure implémente les interfaces (Ports) définies dans Domain
-                    <br>⭐ <strong>Dependency Inversion Principle</strong>
+                    Infrastructure implements the interfaces (Ports) defined in Domain
+                    <br><strong>Dependency Inversion Principle</strong>
                 </p>
             </div>
         </div>

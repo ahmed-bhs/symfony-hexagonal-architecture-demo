@@ -6,12 +6,13 @@ namespace App\Security\User\Application\Command\RegisterUser;
 
 use App\Security\User\Application\Exception\EmailAlreadyExistsException;
 use App\Security\User\Domain\Model\User;
-use App\Security\User\Domain\Port\PasswordHasherInterface;
-use App\Security\User\Domain\Port\UserRepositoryInterface;
+use App\Security\User\Domain\Port\In\RegisterUserUseCaseInterface;
+use App\Security\User\Domain\Port\Out\PasswordHasherInterface;
+use App\Security\User\Domain\Port\Out\UserRepositoryInterface;
 use App\Security\User\Domain\ValueObject\Email;
 use App\Security\User\Domain\ValueObject\HashedPassword;
 use App\Security\User\Domain\ValueObject\UserId;
-use App\Shared\Domain\Port\IdGeneratorInterface;
+use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -21,7 +22,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Domain logic is in User aggregate.
  */
 #[AsMessageHandler]
-final readonly class RegisterUserCommandHandler
+final readonly class RegisterUserCommandHandler implements RegisterUserUseCaseInterface
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,

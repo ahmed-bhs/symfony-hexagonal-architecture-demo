@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-use App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface;
+use App\Gift\Attribution\Domain\Port\Out\ResidentRepositoryInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -17,30 +17,30 @@ return function (array $context) {
 
     $io = new SymfonyStyle(new ArgvInput(), new ConsoleOutput());
 
-    /** @var HabitantRepositoryInterface $repository */
-    $repository = $container->get(HabitantRepositoryInterface::class);
+    /** @var ResidentRepositoryInterface $repository */
+    $repository = $container->get(ResidentRepositoryInterface::class);
 
-    $habitants = $repository->findAll();
+    $residents = $repository->findAll();
 
     $io->title('Test ValueObject Hydration');
-    $io->section(sprintf('Found %d habitants', count($habitants)));
+    $io->section(sprintf('Found %d residents', count($residents)));
 
-    foreach ($habitants as $habitant) {
+    foreach ($residents as $resident) {
         $io->writeln(sprintf(
             '- <info>%s %s</info> (age: %d, email: %s, id: %s)',
-            $habitant->getPrenom(),
-            $habitant->getNom(),
-            $habitant->getAge()->value,  // Test Age ValueObject
-            $habitant->getEmail()->value,  // Test Email ValueObject
-            $habitant->getId()->value  // Test HabitantId ValueObject
+            $resident->getFirstName(),
+            $resident->getLastName(),
+            $resident->getAge()->value,  // Test Age ValueObject
+            $resident->getEmail()->value,  // Test Email ValueObject
+            $resident->getId()->value  // Test ResidentId ValueObject
         ));
 
         // Verify types
         $io->writeln(sprintf(
             '  Types: Age=%s, Email=%s, Id=%s',
-            get_class($habitant->getAge()),
-            get_class($habitant->getEmail()),
-            get_class($habitant->getId())
+            get_class($resident->getAge()),
+            get_class($resident->getEmail()),
+            get_class($resident->getId())
         ));
         $io->newLine();
     }

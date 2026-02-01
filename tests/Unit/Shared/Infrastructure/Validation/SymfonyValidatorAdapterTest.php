@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Shared\Infrastructure\Validation;
 
 use App\Shared\Domain\Validation\ValidationException;
-use App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter;
+use App\Shared\Infrastructure\Adapter\Out\Validation\SymfonyValidatorAdapter;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,8 +27,8 @@ final class SymfonyValidatorAdapterTest extends TestCase
     #[Test]
     public function it_validates_object_with_symfony_constraints_via_attributes(): void
     {
-        // Note: Utilise des attributs pour simplifier le test unitaire.
-        // En production, les contraintes sont en YAML (config/validator).
+        // Note: Uses attributes to simplify unit testing.
+        // In production, constraints are in YAML (config/validator).
         $validObject = new class ('test@example.com', 'John Doe') {
             public function __construct(
                 #[Assert\NotBlank]

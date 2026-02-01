@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Fake\Generator;
 
-use App\Shared\Domain\Port\IdGeneratorInterface;
+use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 
 /**
  * Fake ID Generator for testing purposes.
@@ -13,26 +13,26 @@ use App\Shared\Domain\Port\IdGeneratorInterface;
  * to provide deterministic, predictable IDs for unit and integration tests.
  *
  * Benefits:
- * ✅ Deterministic IDs (no randomness)
- * ✅ Predictable sequences
- * ✅ Easy assertions in tests
- * ✅ No need to mock Symfony Uid
+ * - Deterministic IDs (no randomness)
+ * - Predictable sequences
+ * - Easy assertions in tests
+ * - No need to mock Symfony Uid
  *
  * Usage in tests:
  * ```php
  * $idGenerator = new FakeIdGenerator();
  *
- * $handler = new AttribuerCadeauxCommandHandler(
+ * $handler = new AttributeGiftCommandHandler(
  *     $idGenerator,
- *     $habitantRepository,
- *     $cadeauRepository,
- *     $attributionRepository
+ *     $residentRepository,
+ *     $giftRepository,
+ *     $giftAttributionRepository
  * );
  *
  * $handler->__invoke($command);
  *
- * $attribution = $attributionRepository->findById('fake-id-1');
- * $this->assertNotNull($attribution);  // ✅ Deterministic!
+ * $attribution = $giftAttributionRepository->findById('fake-id-1');
+ * $this->assertNotNull($attribution);  // Deterministic!
  * ```
  *
  * Custom ID example:

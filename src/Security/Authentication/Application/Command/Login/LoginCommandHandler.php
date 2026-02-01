@@ -6,9 +6,10 @@ namespace App\Security\Authentication\Application\Command\Login;
 
 use App\Security\Authentication\Application\DTO\TokenDTO;
 use App\Security\Authentication\Application\Exception\InvalidCredentialsException;
-use App\Security\Authentication\Domain\Port\TokenGeneratorInterface;
-use App\Security\User\Domain\Port\PasswordHasherInterface;
-use App\Security\User\Domain\Port\UserRepositoryInterface;
+use App\Security\Authentication\Domain\Port\In\LoginUseCaseInterface;
+use App\Security\Authentication\Domain\Port\Out\TokenGeneratorInterface;
+use App\Security\User\Domain\Port\Out\PasswordHasherInterface;
+use App\Security\User\Domain\Port\Out\UserRepositoryInterface;
 use App\Security\User\Domain\ValueObject\Email;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -18,7 +19,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Authenticates user and generates JWT token.
  */
 #[AsMessageHandler]
-final readonly class LoginCommandHandler
+final readonly class LoginCommandHandler implements LoginUseCaseInterface
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
