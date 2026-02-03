@@ -262,12 +262,15 @@ src/
 │   │   │   ├── CreateProduct/
 │   │   │   ├── GetProduct/
 │   │   │   └── GetProducts/
-│   │   └── Infrastructure/Persistence/Doctrine/
-│   │       ├── DoctrineProductRepository.php
-│   │       ├── Orm/Mapping/Model/Product.orm.xml
-│   │       └── Type/
-│   │           ├── PriceType.php                            # Doctrine type pour Price VO
-│   │           └── ProductNameType.php
+│   │   └── Infrastructure/
+│   │       ├── Persistence/Doctrine/
+│   │       │   ├── DoctrineProductRepository.php
+│   │       │   ├── Orm/Mapping/Model/Product.orm.xml
+│   │       │   └── Type/
+│   │       │       ├── PriceType.php                        # Doctrine type pour Price VO
+│   │       │       └── ProductNameType.php
+│   │       └── Web/Admin/
+│   │           └── ProductCrudController.php                # EasyAdmin CRUD (accès direct Doctrine)
 │   │
 │   ├── Cart/                                                # Sous-domaine : Panier d'achat
 │   │   ├── Domain/
@@ -335,15 +338,17 @@ src/
 │       └── Infrastructure/
 │           ├── Messaging/Handler/
 │           │   └── SendOrderConfirmationHandler.php
-│           └── Persistence/Doctrine/
-│               ├── DoctrineOrderRepository.php
-│               ├── Orm/Mapping/Model/
-│               │   ├── Order.orm.xml
-│               │   └── OrderItem.orm.xml
-│               └── Type/
-│                   ├── OrderStatusType.php
-│                   ├── OrderTotalType.php
-│                   └── ShippingAddressType.php
+│           ├── Persistence/Doctrine/
+│           │   ├── DoctrineOrderRepository.php
+│           │   ├── Orm/Mapping/Model/
+│           │   │   ├── Order.orm.xml
+│           │   │   └── OrderItem.orm.xml
+│           │   └── Type/
+│           │       ├── OrderStatusType.php
+│           │       ├── OrderTotalType.php
+│           │       └── ShippingAddressType.php
+│           └── Web/Admin/
+│               └── OrderCrudController.php                  # EasyAdmin CRUD (lecture seule)
 │
 └── Shared/                                                  # Shared Kernel : Éléments partagés entre contextes
     ├── Domain/
@@ -361,25 +366,28 @@ src/
     │   │   └── ValidatorInterface.php
     │   └── ValueObject/
     │       └── Email.php                                    # VO : Email partagé entre contextes
-    ├── Infrastructure/Adapter/Out/
-    │   ├── Event/
-    │   │   └── SymfonyDomainEventPublisher.php              # Publie les événements via EventDispatcher + EventStore
-    │   ├── Generator/
-    │   │   └── UuidV7Generator.php                          # Implémente IdGeneratorInterface
-    │   ├── Http/EventListener/
-    │   │   └── RequestIdListener.php                        # Correlation ID pour traçabilité
-    │   ├── Messenger/Middleware/
-    │   │   └── ValidationMiddleware.php                     # Validation automatique des commandes
-    │   ├── Persistence/Doctrine/
-    │   │   ├── DoctrineEventStore.php                       # Implémente EventStoreInterface
-    │   │   ├── DomainEventPublisherListener.php             # Auto-publication après flush
-    │   │   ├── Entity/
-    │   │   │   └── StoredEvent.php                          # Entity pour persister les événements
-    │   │   └── Type/
-    │   │       └── EmailType.php                            # Type Doctrine pour Email VO
-    │   └── Validator/Constraint/
-    │       ├── GiftAvailable.php                            # Contrainte custom : cadeau disponible
-    │       └── GiftAvailableValidator.php
+    └── Infrastructure/
+        ├── Adapter/Out/
+        │   ├── Event/
+        │   │   └── SymfonyDomainEventPublisher.php          # Publie les événements via EventDispatcher + EventStore
+        │   ├── Generator/
+        │   │   └── UuidV7Generator.php                      # Implémente IdGeneratorInterface
+        │   ├── Http/EventListener/
+        │   │   └── RequestIdListener.php                    # Correlation ID pour traçabilité
+        │   ├── Messenger/Middleware/
+        │   │   └── ValidationMiddleware.php                 # Validation automatique des commandes
+        │   ├── Persistence/Doctrine/
+        │   │   ├── DoctrineEventStore.php                   # Implémente EventStoreInterface
+        │   │   ├── DomainEventPublisherListener.php         # Auto-publication après flush
+        │   │   ├── Entity/
+        │   │   │   └── StoredEvent.php                      # Entity pour persister les événements
+        │   │   └── Type/
+        │   │       └── EmailType.php                        # Type Doctrine pour Email VO
+        │   └── Validator/Constraint/
+        │       ├── GiftAvailable.php                        # Contrainte custom : cadeau disponible
+        │       └── GiftAvailableValidator.php
+        └── Web/Admin/
+            └── DashboardController.php                      # EasyAdmin Dashboard global
     ├── Pagination/Domain/ValueObject/                       # Pagination réutilisable
     │   ├── Page.php
     │   ├── PaginatedResult.php

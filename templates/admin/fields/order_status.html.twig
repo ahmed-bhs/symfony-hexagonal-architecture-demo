@@ -1,0 +1,10 @@
+{% set status = field.value %}
+{% set badge_class = {
+    'pending': 'warning',
+    'confirmed': 'info',
+    'shipped': 'primary',
+    'delivered': 'success',
+    'cancelled': 'danger'
+}[status] ?? 'secondary' %}
+
+<span class="badge bg-{{ badge_class }}">{{ status|capitalize }}</span>
