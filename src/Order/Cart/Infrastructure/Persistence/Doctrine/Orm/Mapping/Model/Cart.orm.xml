@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Order\Cart\Domain\Model\Cart"
+            table="cart">
+
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="customerId" type="string" column="customer_id" length="36"/>
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+        <field name="updatedAt" type="datetime_immutable" column="updated_at"/>
+
+        <one-to-many field="items" target-entity="App\Order\Cart\Domain\Model\CartItem" mapped-by="cart" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
+
+    </entity>
+
+</doctrine-mapping>

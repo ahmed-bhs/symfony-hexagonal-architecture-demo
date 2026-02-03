@@ -1515,6 +1515,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     skeleton_dir?: scalar|null|Param, // Default: "%kernel.project_dir%/config/skeleton"
  *     root_dir?: scalar|null|Param, // Default: "src"
  *     root_namespace?: scalar|null|Param, // Default: "App"
+ *     port_style?: "flat"|"in_out"|Param, // Port namespace style: "flat" for Domain\Port, "in_out" for Domain\Port\In and Domain\Port\Out (recommended for hexagonal architecture) // Default: "in_out"
  * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57f81f494f17462cdebf7bbded67511a",
+    "content-hash": "7e914a25f4c4b78c4f086e352e9c5ca8",
     "packages": [
         {
             "name": "composer/semver",
@@ -8127,11 +8127,11 @@
     "packages-dev": [
         {
             "name": "ahmed-bhs/hexagonal-maker-bundle",
-            "version": "dev-main",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": "../hexagonal-maker-bundle",
-                "reference": "e0d0324d7277c14e88580636e401a4e225f4d713"
+                "reference": "eb568e94960109cb4717aa6b63a2b850b8a8e83b"
             },
             "require": {
                 "ext-json": "*",
@@ -10620,9 +10620,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ahmed-bhs/hexagonal-maker-bundle": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -8,3 +8,9 @@ gift_request_controllers:
         path: ../src/Gift/Request/Infrastructure/Adapter/In/Web/Controller/
         namespace: App\Gift\Request\Infrastructure\Adapter\In\Web\Controller
     type: attribute
+# Order bounded context routes (controllers to be created)
+# order_catalog_controllers:
+#     resource:
+#         path: ../src/Order/Catalog/UI/Http/Web/Controller/
+#         namespace: App\Order\Catalog\UI\Http\Web\Controller
+#     type: attribute
