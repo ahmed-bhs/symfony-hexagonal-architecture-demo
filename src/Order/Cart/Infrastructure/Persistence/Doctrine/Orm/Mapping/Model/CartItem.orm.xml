@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Order\Cart\Domain\Model\CartItem"
+            table="cart_item">
+
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="productId" type="string" column="product_id" length="36"/>
+        <field name="productName" type="string" column="product_name" length="200"/>
+        <field name="unitPrice" type="integer" column="unit_price"/>
+        <field name="quantity" type="integer" column="quantity"/>
+
+        <many-to-one field="cart" target-entity="App\Order\Cart\Domain\Model\Cart" inversed-by="items">
+            <join-column name="cart_id" referenced-column-name="id" nullable="false"/>
+        </many-to-one>
+
+    </entity>
+
+</doctrine-mapping>

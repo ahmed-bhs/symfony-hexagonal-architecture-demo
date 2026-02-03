@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Order\Catalog\Domain\Model\Product"
+            table="product">
+
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="name" type="product_name" column="name"/>
+        <field name="description" type="text" column="description"/>
+        <field name="price" type="product_price" column="price_amount"/>
+        <field name="stock" type="integer" column="stock"/>
+
+    </entity>
+
+</doctrine-mapping>

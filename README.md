@@ -32,12 +32,19 @@ Cette application illustre l'implémentation d'une architecture hexagonale (Port
 
 ### 1.2 Domaine Métier
 
-Le système gère la distribution de cadeaux aux habitants selon les règles suivantes :
+Le système illustre deux bounded contexts :
 
+**Gift (Gestion des cadeaux)**
 - Gestion d'habitants avec leurs caractéristiques (âge, email)
 - Catalogue de cadeaux avec gestion de stock
 - Attribution de cadeaux aux habitants
 - Demandes de cadeaux avec workflow d'approbation
+
+**Order (E-commerce)**
+- Catalogue produits avec prix et stock
+- Panier d'achat avec ajout/suppression d'articles
+- Commandes avec state machine (pending → confirmed → shipped → delivered)
+- Événements domaine pour chaque transition d'état
 
 ### 1.3 Patterns Appliqués
 
@@ -66,100 +73,320 @@ Domain (centre)
 ### 2.2 Organisation du Code
 
 ```
-src/Cadeau/
-├── Attribution/                                    # Bounded Context 1 : Gestion attribution cadeaux
-│   ├── Domain/                                     # Logique métier pure (aucune dépendance)
-│   │   ├── Model/                                  # Entities DDD (identité + cycle de vie, pur PHP sans Doctrine)
-│   │   │   ├── Attribution.php                     # Aggregate Root : Attribution d'un cadeau à un habitant (id, habitantId, cadeauId, dateAttribution)
-│   │   │   ├── Cadeau.php                          # Entity : Cadeau avec gestion stock (id, nom, description, quantite)
-│   │   │   └── Habitant.php                        # Entity : Habitant destinataire (HabitantId, prenom, nom, Age, Email)
-│   │   ├── Port/                                   # Interfaces (contrats) définies par le Domain
-│   │   │   ├── AttributionRepositoryInterface.php  # Port pour persistance des attributions
-│   │   │   ├── CadeauRepositoryInterface.php       # Port pour persistance des cadeaux
-│   │   │   └── HabitantRepositoryInterface.php     # Port pour persistance des habitants
-│   │   └── ValueObject/                            # Objets immuables définis par leurs valeurs
-│   │       ├── Age.php                             # VO : Age avec règles métier (value: int, isAdult(), isSenior(), isChild())
-│   │       └── HabitantId.php                      # VO : Identifiant typé pour Habitant (value: string UUID)
-│   ├── Application/                                # Use Cases (orchestration Domain)
-│   │   ├── AttribuerCadeaux/                       # Use Case : Attribuer un cadeau
-│   │   │   ├── AttribuerCadeauxCommand.php         # DTO d'entrée (write operation)
-│   │   │   ├── AttribuerCadeauxCommandHandler.php  # Orchestration logique métier
-│   │   │   └── AttribuerCadeauxCommandValidator.php # Validation pure PHP (UUID)
-│   │   ├── RecupererCadeaux/                       # Use Case : Lister les cadeaux
-│   │   │   ├── RecupererCadeauxQuery.php           # DTO d'entrée (read operation)
-│   │   │   ├── RecupererCadeauxQueryHandler.php    # Lecture sans modification
-│   │   │   └── RecupererCadeauxResponse.php        # DTO de sortie
-│   │   ├── RecupererHabitants/                     # Use Case : Lister les habitants (pagination, recherche)
-│   │   │   ├── RecupererHabitantsQuery.php         # DTO avec critères pagination/recherche
-│   │   │   ├── RecupererHabitantsQueryHandler.php  # Lecture avec pagination
-│   │   │   └── RecupererHabitantsResponse.php      # DTO avec résultats paginés
-│   │   └── RecupererStatistiques/                  # Use Case : Statistiques globales
-│   │       ├── RecupererStatistiquesQuery.php      # DTO d'entrée
-│   │       ├── RecupererStatistiquesQueryHandler.php # Agrégation données
-│   │       └── RecupererStatistiquesResponse.php   # DTO avec stats (nombre habitants, cadeaux, etc.)
-│   ├── Infrastructure/                             # Adapters (implémentations concrètes)
-│   │   └── Persistence/Doctrine/                   # Adapter pour persistance via Doctrine ORM
-│   │       ├── DoctrineAttributionRepository.php   # Implémente AttributionRepositoryInterface
-│   │       ├── DoctrineCadeauRepository.php        # Implémente CadeauRepositoryInterface
-│   │       ├── DoctrineHabitantRepository.php      # Implémente HabitantRepositoryInterface
-│   │       ├── Orm/Mapping/                        # Mapping Doctrine XML (externalisé du Domain)
-│   │       │   ├── Attribution.orm.xml             # Mapping Attribution Entity → DB
-│   │       │   ├── Cadeau.orm.xml                  # Mapping Cadeau Entity → DB
-│   │       │   └── Habitant.orm.xml                # Mapping Habitant Entity → DB
-│   │       └── Type/                               # Types Doctrine custom pour Value Objects
-│   │           ├── AgeType.php                     # Mapping Age (VO) → int (DB)
-│   │           └── HabitantIdType.php              # Mapping HabitantId (VO) → string (DB)
-│   └── UI/Http/Web/Controller/                     # Primary Adapters (points d'entrée HTTP)
-│       ├── ListCadeauxController.php               # Contrôleur affichage liste cadeaux
-│       └── ListHabitantsController.php             # Contrôleur affichage liste habitants
+src/
+├── Gift/                                                    # Bounded Context 1 : Gestion des cadeaux
+│   ├── Attribution/                                         # Sous-domaine : Attribution de cadeaux
+│   │   ├── Domain/                                          # Logique métier pure (aucune dépendance)
+│   │   │   ├── Event/
+│   │   │   │   └── GiftAttributed.php                       # Domain Event : cadeau attribué
+│   │   │   ├── Model/                                       # Entities DDD (pur PHP sans Doctrine)
+│   │   │   │   ├── Gift.php                                 # Entity : Cadeau avec gestion stock
+│   │   │   │   ├── GiftAttribution.php                      # Aggregate Root : Attribution d'un cadeau à un résident
+│   │   │   │   └── Resident.php                             # Entity : Résident destinataire
+│   │   │   ├── Port/                                        # Interfaces (contrats) définies par le Domain
+│   │   │   │   ├── In/                                      # Ports primaires (use cases)
+│   │   │   │   │   ├── AttributeGiftUseCaseInterface.php
+│   │   │   │   │   ├── GetGiftsUseCaseInterface.php
+│   │   │   │   │   ├── GetResidentsUseCaseInterface.php
+│   │   │   │   │   └── GetStatisticsUseCaseInterface.php
+│   │   │   │   └── Out/                                     # Ports secondaires (persistance)
+│   │   │   │       ├── GiftAttributionRepositoryInterface.php
+│   │   │   │       ├── GiftRepositoryInterface.php
+│   │   │   │       └── ResidentRepositoryInterface.php
+│   │   │   └── ValueObject/                                 # Objets immuables définis par leurs valeurs
+│   │   │       ├── Age.php                                  # VO : Age avec règles métier
+│   │   │       ├── GiftId.php                               # VO : Identifiant typé pour Gift
+│   │   │       └── ResidentId.php                           # VO : Identifiant typé pour Resident
+│   │   ├── Application/                                     # Use Cases (orchestration Domain)
+│   │   │   ├── Command/
+│   │   │   │   └── AttributeGift/                           # Use Case : Attribuer un cadeau
+│   │   │   │       ├── AttributeGiftCommand.php             # DTO d'entrée (write operation)
+│   │   │   │       └── AttributeGiftCommandHandler.php      # Orchestration logique métier
+│   │   │   ├── DTO/                                         # Data Transfer Objects
+│   │   │   │   ├── AttributionResultDTO.php
+│   │   │   │   ├── GiftDTO.php
+│   │   │   │   └── ResidentDTO.php
+│   │   │   ├── Exception/
+│   │   │   │   ├── GiftAttributionFailedException.php
+│   │   │   │   └── NoEligibleGiftException.php
+│   │   │   ├── Query/
+│   │   │   │   ├── GetGifts/                                # Use Case : Lister les cadeaux
+│   │   │   │   │   ├── GetGiftsQuery.php
+│   │   │   │   │   ├── GetGiftsQueryHandler.php
+│   │   │   │   │   └── GetGiftsResponse.php
+│   │   │   │   ├── GetResidents/                            # Use Case : Lister les résidents (pagination, recherche)
+│   │   │   │   │   ├── GetResidentsQuery.php
+│   │   │   │   │   ├── GetResidentsQueryHandler.php
+│   │   │   │   │   └── GetResidentsResponse.php
+│   │   │   │   └── GetStatistics/                           # Use Case : Statistiques globales
+│   │   │   │       ├── GetStatisticsQuery.php
+│   │   │   │       ├── GetStatisticsQueryHandler.php
+│   │   │   │       └── GetStatisticsResponse.php
+│   │   │   └── Service/
+│   │   │       └── AutomaticGiftAttributionService.php      # Service d'attribution automatique
+│   │   └── Infrastructure/
+│   │       └── Adapter/
+│   │           ├── In/                                      # Primary Adapters (points d'entrée)
+│   │           │   ├── Http/Controller/
+│   │           │   │   ├── AttributionController.php        # API REST attribution
+│   │           │   │   └── AutomaticAttributionController.php
+│   │           │   └── Web/Controller/
+│   │           │       ├── ListGiftsController.php          # Contrôleur liste cadeaux
+│   │           │       └── ListResidentsController.php      # Contrôleur liste résidents
+│   │           └── Out/                                     # Secondary Adapters (implémentations)
+│   │               ├── EventSubscriber/
+│   │               │   └── GiftAttributedSubscriber.php     # Réagit à GiftAttributed event
+│   │               ├── Messaging/
+│   │               │   └── GenerateGiftCertificate/
+│   │               │       ├── GenerateGiftCertificateCommand.php
+│   │               │       └── GenerateGiftCertificateCommandHandler.php
+│   │               └── Persistence/Doctrine/
+│   │                   ├── DoctrineGiftAttributionRepository.php
+│   │                   ├── DoctrineGiftRepository.php
+│   │                   ├── DoctrineResidentRepository.php
+│   │                   ├── Orm/Mapping/                     # Mapping Doctrine XML
+│   │                   │   ├── GiftAttribution.orm.xml
+│   │                   │   ├── Gift.orm.xml
+│   │                   │   └── Resident.orm.xml
+│   │                   └── Type/                            # Types Doctrine custom pour Value Objects
+│   │                       ├── AgeType.php
+│   │                       └── ResidentIdType.php
+│   │
+│   └── Request/                                             # Sous-domaine : Demandes de cadeaux
+│       ├── Domain/
+│       │   ├── Event/
+│       │   │   └── GiftRequestSubmitted.php                 # Domain Event : demande soumise
+│       │   ├── Model/
+│       │   │   └── GiftRequest.php                          # Aggregate Root : Demande de cadeau
+│       │   └── Port/
+│       │       ├── In/
+│       │       │   └── SubmitGiftRequestUseCaseInterface.php
+│       │       └── Out/
+│       │           └── GiftRequestRepositoryInterface.php
+│       ├── Application/
+│       │   ├── Command/
+│       │   │   └── SubmitGiftRequest/                       # Use Case : Soumettre une demande
+│       │   │       ├── SubmitGiftRequestCommand.php
+│       │   │       └── SubmitGiftRequestCommandHandler.php
+│       │   ├── DTO/
+│       │   │   └── GiftRequestSummaryDTO.php
+│       │   └── Exception/
+│       │       └── InvalidGiftRequestException.php
+│       └── Infrastructure/
+│           └── Adapter/
+│               ├── In/Web/
+│               │   ├── Controller/
+│               │   │   └── GiftRequestFormController.php    # Contrôleur formulaire demande
+│               │   └── Form/
+│               │       └── GiftRequestType.php              # Type de formulaire Symfony
+│               └── Out/
+│                   ├── EventSubscriber/
+│                   │   └── GiftRequestSubmittedSubscriber.php
+│                   └── Persistence/Doctrine/
+│                       └── DoctrineGiftRequestRepository.php
 │
-├── Demande/                                        # Bounded Context 2 : Gestion demandes cadeaux
-│   ├── Domain/                                     # Logique métier pure
-│   │   ├── Model/
-│   │   │   └── DemandeCadeau.php                   # Aggregate Root : Demande de cadeau par un demandeur (id, nomDemandeur, Email, telephone, cadeauSouhaite, motivation, statut, dateCreation)
-│   │   └── Port/
-│   │       └── DemandeCadeauRepositoryInterface.php # Port pour persistance des demandes
-│   ├── Application/                                # Use Cases
-│   │   └── SoumettreDemandeCadeau/                 # Use Case : Soumettre une demande de cadeau
-│   │       ├── SoumettreDemandeCadeauCommand.php   # DTO avec données demande (nom, email, téléphone, motivation)
-│   │       └── SoumettreDemandeCadeauCommandHandler.php # Orchestration création demande + validation Symfony
-│   ├── Infrastructure/                             # Adapters
-│   │   └── Persistence/Doctrine/
-│   │       ├── DoctrineDemandeCadeauRepository.php # Implémente DemandeCadeauRepositoryInterface
-│   │       └── Orm/Mapping/
-│   │           └── DemandeCadeau.orm.xml           # Mapping DemandeCadeau Entity → DB
-│   └── UI/Http/Web/                                # Primary Adapters
-│       ├── Controller/
-│       │   └── DemandeCadeauFormController.php     # Contrôleur formulaire soumission demande
-│       └── Form/
-│           └── DemandeCadeauType.php               # Type de formulaire Symfony
+├── Security/                                                # Bounded Context 2 : Sécurité
+│   ├── Authentication/                                      # Sous-domaine : Authentification JWT
+│   │   ├── Domain/Port/
+│   │   │   ├── In/
+│   │   │   │   ├── GetCurrentUserUseCaseInterface.php
+│   │   │   │   └── LoginUseCaseInterface.php
+│   │   │   └── Out/
+│   │   │       └── TokenGeneratorInterface.php
+│   │   ├── Application/
+│   │   │   ├── Command/Login/
+│   │   │   │   ├── LoginCommand.php
+│   │   │   │   └── LoginCommandHandler.php
+│   │   │   ├── DTO/
+│   │   │   │   └── TokenDTO.php
+│   │   │   ├── Exception/
+│   │   │   │   └── InvalidCredentialsException.php
+│   │   │   └── Query/GetCurrentUser/
+│   │   │       ├── GetCurrentUserQuery.php
+│   │   │       └── GetCurrentUserQueryHandler.php
+│   │   └── Infrastructure/Adapter/
+│   │       ├── In/Http/Controller/
+│   │       │   └── AuthController.php                       # Contrôleur API auth (login, register, me)
+│   │       └── Out/
+│   │           ├── Jwt/
+│   │           │   └── FirebaseJwtTokenGenerator.php         # Implémente TokenGeneratorInterface
+│   │           └── Security/
+│   │               ├── JwtAuthenticator.php                  # Symfony Security authenticator
+│   │               └── SymfonyUserAdapter.php
+│   │
+│   └── User/                                                # Sous-domaine : Gestion utilisateurs
+│       ├── Domain/
+│       │   ├── Event/
+│       │   │   └── UserRegistered.php                       # Domain Event : utilisateur inscrit
+│       │   ├── Model/
+│       │   │   └── User.php                                 # Entity : Utilisateur
+│       │   ├── Port/
+│       │   │   ├── In/
+│       │   │   │   └── RegisterUserUseCaseInterface.php
+│       │   │   └── Out/
+│       │   │       ├── PasswordHasherInterface.php
+│       │   │       └── UserRepositoryInterface.php
+│       │   └── ValueObject/
+│       │       ├── Email.php                                # VO : Email utilisateur
+│       │       ├── HashedPassword.php                       # VO : Mot de passe hashé
+│       │       └── UserId.php                               # VO : Identifiant utilisateur
+│       ├── Application/
+│       │   ├── Command/RegisterUser/
+│       │   │   ├── RegisterUserCommand.php
+│       │   │   └── RegisterUserCommandHandler.php
+│       │   ├── DTO/
+│       │   │   └── UserDTO.php
+│       │   └── Exception/
+│       │       └── EmailAlreadyExistsException.php
+│       └── Infrastructure/Adapter/Out/
+│           ├── EventSubscriber/
+│           │   └── UserRegisteredSubscriber.php
+│           ├── Persistence/Doctrine/
+│           │   └── DoctrineUserRepository.php
+│           └── Security/
+│               └── SymfonyPasswordHasher.php                # Implémente PasswordHasherInterface
 │
-└── Shared/                                         # Shared Kernel : Éléments partagés entre contextes
-    ├── Domain/                                     # Concepts métier partagés
-    │   ├── Port/
-    │   │   └── IdGeneratorInterface.php            # Port pour génération IDs (UUID v7, ULID, etc.)
-    │   ├── Validation/                             # Validation hexagonale
-    │   │   ├── ValidationError.php                 # Représente une erreur de validation (field + message)
-    │   │   ├── ValidationException.php             # Exception levée lors d'échec validation
-    │   │   └── ValidatorInterface.php              # Port pour validation (2 implémentations : PHP pur, Symfony)
+└── Shared/                                                  # Shared Kernel : Éléments partagés entre contextes
+    ├── Domain/
+    │   ├── Aggregate/
+    │   │   └── AggregateRoot.php                            # Classe abstraite pour les agrégats
+    │   ├── Event/
+    │   │   └── DomainEvent.php                              # Interface pour les événements domaine
+    │   ├── Port/Out/
+    │   │   ├── DomainEventPublisherInterface.php            # Port pour publication d'événements
+    │   │   ├── EventStoreInterface.php                      # Port pour stockage d'événements
+    │   │   └── IdGeneratorInterface.php                     # Port pour génération IDs (UUID v7)
+    │   ├── Validation/                                      # Validation hexagonale
+    │   │   ├── ValidationError.php
+    │   │   ├── ValidationException.php
+    │   │   └── ValidatorInterface.php
     │   └── ValueObject/
-    │       └── Email.php                           # VO : Email avec validation format (value: string, partagé entre contextes)
-    ├── Infrastructure/                             # Adapters partagés
+    │       └── Email.php                                    # VO : Email partagé entre contextes
+    ├── Infrastructure/Adapter/Out/
+    │   ├── Event/
+    │   │   └── SymfonyDomainEventPublisher.php              # Publie les événements via EventDispatcher + EventStore
     │   ├── Generator/
-    │   │   └── UuidV7Generator.php                 # Implémente IdGeneratorInterface (UUID v7 time-ordered)
-    │   ├── Persistence/Doctrine/Type/
-    │   │   └── EmailType.php                       # Type Doctrine pour Email VO
-    │   └── Validation/
-    │       └── SymfonyValidatorAdapter.php         # Adapte Symfony Validator à ValidatorInterface
-    ├── Pagination/                                 # Pagination réutilisable
-    │   └── Domain/ValueObject/
-    │       ├── Page.php                            # VO : Numéro de page (value: int >= 1)
-    │       ├── PaginatedResult.php                 # VO : Résultat paginé (items: array, page, perPage, total)
-    │       ├── PerPage.php                         # VO : Items par page (value: int entre 1 et 100)
-    │       └── Total.php                           # VO : Nombre total items (value: int >= 0)
-    └── Search/                                     # Recherche réutilisable
-        └── Domain/ValueObject/
-            └── SearchTerm.php                      # VO : Terme de recherche (value: string, normalisé)
+    │   │   └── UuidV7Generator.php                          # Implémente IdGeneratorInterface
+    │   ├── Http/EventListener/
+    │   │   └── RequestIdListener.php                        # Correlation ID pour traçabilité
+    │   ├── Messenger/Middleware/
+    │   │   └── ValidationMiddleware.php                     # Validation automatique des commandes
+    │   ├── Persistence/Doctrine/
+    │   │   ├── DoctrineEventStore.php                       # Implémente EventStoreInterface
+    │   │   ├── DomainEventPublisherListener.php             # Auto-publication après flush
+    │   │   ├── Entity/
+    │   │   │   └── StoredEvent.php                          # Entity pour persister les événements
+    │   │   └── Type/
+    │   │       └── EmailType.php                            # Type Doctrine pour Email VO
+    │   └── Validator/Constraint/
+    │       ├── GiftAvailable.php                            # Contrainte custom : cadeau disponible
+    │       └── GiftAvailableValidator.php
+    ├── Pagination/Domain/ValueObject/                       # Pagination réutilisable
+    │   ├── Page.php
+    │   ├── PaginatedResult.php
+    │   ├── PerPage.php
+    │   └── Total.php
+    └── Search/Domain/ValueObject/                           # Recherche réutilisable
+        └── SearchTerm.php
+│
+├── Order/                                                   # Bounded Context 2 : Gestion des commandes
+│   ├── Catalog/                                             # Sous-domaine : Catalogue produits
+│   │   ├── Domain/
+│   │   │   ├── Model/Product.php                            # Entity : Produit avec stock
+│   │   │   ├── Exception/
+│   │   │   │   ├── ProductNotFoundException.php
+│   │   │   │   └── InsufficientStockException.php
+│   │   │   ├── Port/Out/ProductRepositoryInterface.php
+│   │   │   └── ValueObject/
+│   │   │       ├── ProductId.php
+│   │   │       ├── ProductName.php
+│   │   │       └── Price.php                                # VO Money pattern (add, subtract, multiply)
+│   │   ├── Application/
+│   │   │   ├── CreateProduct/
+│   │   │   ├── GetProduct/
+│   │   │   └── GetProducts/
+│   │   └── Infrastructure/Persistence/Doctrine/
+│   │       ├── DoctrineProductRepository.php
+│   │       ├── Orm/Mapping/Model/Product.orm.xml
+│   │       └── Type/
+│   │           ├── PriceType.php                            # Doctrine type pour Price VO
+│   │           └── ProductNameType.php
+│   │
+│   ├── Cart/                                                # Sous-domaine : Panier d'achat
+│   │   ├── Domain/
+│   │   │   ├── Model/
+│   │   │   │   ├── Cart.php                                 # Aggregate Root avec AggregateRoot trait
+│   │   │   │   └── CartItem.php
+│   │   │   ├── Event/
+│   │   │   │   ├── ItemAddedToCart.php
+│   │   │   │   ├── ItemRemovedFromCart.php
+│   │   │   │   └── CartCleared.php
+│   │   │   ├── Exception/
+│   │   │   │   ├── CartNotFoundException.php
+│   │   │   │   └── CartItemNotFoundException.php
+│   │   │   ├── Port/
+│   │   │   │   ├── In/                                      # Use case interfaces
+│   │   │   │   └── Out/CartRepositoryInterface.php
+│   │   │   └── ValueObject/
+│   │   │       ├── CartId.php
+│   │   │       └── Quantity.php
+│   │   ├── Application/
+│   │   │   ├── AddItemToCart/
+│   │   │   ├── RemoveItemFromCart/
+│   │   │   ├── ClearCart/
+│   │   │   └── GetCart/
+│   │   └── Infrastructure/Persistence/Doctrine/
+│   │
+│   └── Ordering/                                            # Sous-domaine : Commandes et livraison
+│       ├── Domain/
+│       │   ├── Model/
+│       │   │   ├── Order.php                                # Aggregate Root avec state machine
+│       │   │   └── OrderItem.php
+│       │   ├── Event/
+│       │   │   ├── OrderPlaced.php
+│       │   │   ├── OrderConfirmed.php
+│       │   │   ├── OrderShipped.php
+│       │   │   ├── OrderDelivered.php
+│       │   │   └── OrderCancelled.php
+│       │   ├── Exception/
+│       │   │   ├── OrderNotFoundException.php               # Pattern not-found avec withId()
+│       │   │   ├── InvalidOrderStateException.php           # Pattern invalid-state avec cannotTransition()
+│       │   │   └── OrderAlreadyCancelledException.php
+│       │   ├── Port/
+│       │   │   ├── In/
+│       │   │   │   ├── PlaceOrderUseCaseInterface.php
+│       │   │   │   ├── CancelOrderUseCaseInterface.php
+│       │   │   │   └── GetOrderUseCaseInterface.php
+│       │   │   └── Out/OrderRepositoryInterface.php
+│       │   └── ValueObject/
+│       │       ├── OrderId.php
+│       │       ├── OrderStatus.php                          # Status pattern avec state machine
+│       │       │   # States: pending → confirmed → shipped → delivered
+│       │       │   #         pending → cancelled
+│       │       │   #         confirmed → cancelled
+│       │       ├── OrderTotal.php                           # Money pattern
+│       │       └── ShippingAddress.php
+│       ├── Application/
+│       │   ├── PlaceOrder/
+│       │   ├── ConfirmOrder/
+│       │   ├── ShipOrder/
+│       │   ├── DeliverOrder/
+│       │   ├── CancelOrder/
+│       │   ├── GetOrder/
+│       │   ├── GetOrders/
+│       │   └── Message/SendOrderConfirmationMessage.php     # Async message
+│       └── Infrastructure/
+│           ├── Messaging/Handler/
+│           │   └── SendOrderConfirmationHandler.php
+│           └── Persistence/Doctrine/
+│               ├── DoctrineOrderRepository.php
+│               ├── Orm/Mapping/Model/
+│               │   ├── Order.orm.xml
+│               │   └── OrderItem.orm.xml
+│               └── Type/
+│                   ├── OrderStatusType.php
+│                   ├── OrderTotalType.php
+│                   └── ShippingAddressType.php
 ```
 
 ### 2.3 Flux de Données
@@ -352,11 +579,11 @@ php bin/console doctrine:fixtures:load --no-interaction
 #### Dispatcher une Commande
 
 ```php
-use App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommand;
+use App\Gift\Attribution\Application\Command\AttributeGift\AttributeGiftCommand;
 
-$command = new AttribuerCadeauxCommand(
-    habitantId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
-    cadeauId: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+$command = new AttributeGiftCommand(
+    residentId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    giftId: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
 );
 
 $this->commandBus->dispatch($command);
@@ -365,10 +592,10 @@ $this->commandBus->dispatch($command);
 #### Dispatcher une Query
 
 ```php
-use App\Cadeau\Attribution\Application\RecupererHabitants\RecupererHabitantsQuery;
+use App\Gift\Attribution\Application\Query\GetResidents\GetResidentsQuery;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
-$query = new RecupererHabitantsQuery(
+$query = new GetResidentsQuery(
     page: 1,
     perPage: 10,
     searchTerm: ''
@@ -377,7 +604,7 @@ $query = new RecupererHabitantsQuery(
 $envelope = $this->queryBus->dispatch($query);
 $response = $envelope->last(HandledStamp::class)->getResult();
 
-foreach ($response->habitants as $habitant) {
+foreach ($response->residents as $resident) {
     // Traitement
 }
 ```
@@ -390,8 +617,10 @@ foreach ($response->habitants as $habitant) {
 
 | Répertoire | Description |
 |------------|-------------|
-| `src/Cadeau/Attribution/` | Bounded context pour l'attribution de cadeaux |
-| `src/Cadeau/Demande/` | Bounded context pour les demandes de cadeaux |
+| `src/Gift/Attribution/` | Bounded context pour l'attribution de cadeaux |
+| `src/Gift/Request/` | Bounded context pour les demandes de cadeaux |
+| `src/Security/Authentication/` | Bounded context pour l'authentification JWT |
+| `src/Security/User/` | Bounded context pour la gestion des utilisateurs |
 | `src/Shared/` | Shared Kernel (éléments partagés entre contextes) |
 | `tests/` | Tests unitaires, intégration et fonctionnels |
 | `config/` | Configuration de l'application |
@@ -409,15 +638,19 @@ Configuration des mappings XML et types custom :
 doctrine:
     dbal:
         types:
-            habitant_id: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\HabitantIdType
-            age: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\AgeType
-            email_vo: App\Shared\Infrastructure\Persistence\Doctrine\Type\EmailType
+            resident_id: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\Type\ResidentIdType
+            age: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\Type\AgeType
+            email_vo: App\Shared\Infrastructure\Adapter\Out\Persistence\Doctrine\Type\EmailType
     orm:
         mappings:
-            CadeauAttribution:
+            GiftAttribution:
                 type: xml
-                dir: '%kernel.project_dir%/src/Cadeau/Attribution/Infrastructure/Persistence/Doctrine/Orm/Mapping'
-                prefix: App\Cadeau\Attribution\Domain\Model
+                dir: '%kernel.project_dir%/src/Gift/Attribution/Infrastructure/Adapter/Out/Persistence/Doctrine/Orm/Mapping'
+                prefix: App\Gift\Attribution\Domain\Model
+            GiftRequest:
+                type: xml
+                dir: '%kernel.project_dir%/src/Gift/Request/Infrastructure/Adapter/Out/Persistence/Doctrine/Orm/Mapping'
+                prefix: App\Gift\Request\Domain\Model
 ```
 
 #### Validation
@@ -434,14 +667,14 @@ framework:
                 - '%kernel.project_dir%/config/validator'
 ```
 
-Fichier : `config/validator/demande_cadeau_command.yaml`
+Fichier : `config/validator/submit_gift_request_command.yaml`
 
 Contraintes de validation externalisées (NotBlank, Email, Length, Regex) :
 
 ```yaml
-App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommand:
+App\Gift\Request\Application\Command\SubmitGiftRequest\SubmitGiftRequestCommand:
     properties:
-        emailDemandeur:
+        email:
             - NotBlank: ~
             - Email: ~
 ```
@@ -455,33 +688,38 @@ Binding des ports aux adapters :
 ```yaml
 services:
     # ID Generation Port (Shared)
-    App\Shared\Domain\Port\IdGeneratorInterface:
-        class: App\Shared\Infrastructure\Generator\UuidV7Generator
+    App\Shared\Domain\Port\Out\IdGeneratorInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Generator\UuidV7Generator
+
+    # Domain Event Publisher Port (Shared)
+    App\Shared\Domain\Port\Out\DomainEventPublisherInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Event\SymfonyDomainEventPublisher
 
     # Repository Ports
-    App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface:
-        class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineHabitantRepository
+    App\Gift\Attribution\Domain\Port\Out\ResidentRepositoryInterface:
+        class: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineResidentRepository
+    App\Gift\Attribution\Domain\Port\Out\GiftRepositoryInterface:
+        class: App\Gift\Attribution\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineGiftRepository
+    App\Gift\Request\Domain\Port\Out\GiftRequestRepositoryInterface:
+        class: App\Gift\Request\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineGiftRequestRepository
 
-    # Validation Ports
-    # Validateur pur PHP (pour AttribuerCadeauxCommand)
-    App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandHandler:
-        arguments:
-            $validator: '@App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator'
-
-    # Adaptateur Symfony Validator (pour commands avec contraintes YAML)
-    App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommandHandler:
-        arguments:
-            $validator: '@App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter'
+    # Security Ports
+    App\Security\User\Domain\Port\Out\UserRepositoryInterface:
+        class: App\Security\User\Infrastructure\Adapter\Out\Persistence\Doctrine\DoctrineUserRepository
+    App\Security\Authentication\Domain\Port\Out\TokenGeneratorInterface:
+        class: App\Security\Authentication\Infrastructure\Adapter\Out\Jwt\FirebaseJwtTokenGenerator
 ```
 
 ### 5.3 Conventions de Nommage
 
-- **Entities** : Nom au singulier (ex: `Habitant.php`)
-- **Value Objects** : Nom descriptif (ex: `Age.php`, `Email.php`)
-- **Commands** : Verbe à l'infinitif + nom (ex: `AttribuerCadeauxCommand.php`)
-- **Queries** : Verbe + nom (ex: `RecupererHabitantsQuery.php`)
-- **Handlers** : Nom de la commande/query + `Handler` (ex: `AttribuerCadeauxCommandHandler.php`)
-- **Repositories** : Nom de l'entité + `Repository` (ex: `DoctrineHabitantRepository.php`)
+- **Entities** : Nom au singulier (ex: `Resident.php`, `Gift.php`)
+- **Value Objects** : Nom descriptif (ex: `Age.php`, `Email.php`, `ResidentId.php`)
+- **Commands** : Verbe + nom (ex: `AttributeGiftCommand.php`)
+- **Queries** : Verbe + nom (ex: `GetResidentsQuery.php`)
+- **Handlers** : Nom de la commande/query + `Handler` (ex: `AttributeGiftCommandHandler.php`)
+- **Repositories** : `Doctrine` + nom de l'entité + `Repository` (ex: `DoctrineResidentRepository.php`)
+- **Ports In** : Use case + `Interface` (ex: `AttributeGiftUseCaseInterface.php`)
+- **Ports Out** : Nom + `Interface` (ex: `ResidentRepositoryInterface.php`)
 
 ---
 
@@ -610,11 +848,13 @@ L'architecture hexagonale isole le domaine métier des détails techniques. Les 
 
 Patterns DDD utilisés :
 
-- **Entities** : Objets avec identité (Habitant, Cadeau, Attribution)
-- **Value Objects** : Objets définis par leurs attributs (Age, Email, HabitantId)
+- **Entities** : Objets avec identité (Resident, Gift, GiftAttribution, User)
+- **Value Objects** : Objets définis par leurs attributs (Age, Email, ResidentId, UserId)
+- **Aggregate Roots** : Entités racines avec événements domaine (GiftAttribution, GiftRequest, User)
+- **Domain Events** : Événements métier (GiftAttributed, GiftRequestSubmitted, UserRegistered)
 - **Repositories** : Abstraction de la persistance
-- **Bounded Contexts** : Attribution et Demande
-- **Shared Kernel** : Éléments partagés (Email, IdGenerator, Pagination)
+- **Bounded Contexts** : Gift (Attribution, Request) et Security (Authentication, User)
+- **Shared Kernel** : Éléments partagés (Email, IdGenerator, Pagination, EventStore)
 
 #### CQRS
 

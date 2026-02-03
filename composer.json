@@ -99,7 +99,7 @@
         }
     },
     "require-dev": {
-        "ahmed-bhs/hexagonal-maker-bundle": "@dev",
+        "ahmed-bhs/hexagonal-maker-bundle": "^0.2",
         "doctrine/doctrine-fixtures-bundle": "*",
         "phpunit/phpunit": "^12.5",
         "qossmic/deptrac": "^2.0",
@@ -113,7 +113,12 @@
     "repositories": {
         "local": {
             "type": "path",
-            "url": "../hexagonal-maker-bundle"
+            "url": "../hexagonal-maker-bundle",
+            "options": {
+                "versions": {
+                    "ahmed-bhs/hexagonal-maker-bundle": "0.2.0"
+                }
+            }
         }
     }
 }
