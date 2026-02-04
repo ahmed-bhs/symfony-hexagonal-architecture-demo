@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Order\Catalog\Application\GetProducts;
 
 use App\Order\Catalog\Domain\Port\Out\ProductRepositoryInterface;
+use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Query Handler.
- *
- * Handles the execution of GetProductsQuery.
- * Contains the read logic to fetch and return data.
+ * @implements QueryHandlerInterface<GetProductsQuery, GetProductsResponse>
  */
 #[AsMessageHandler]
-final readonly class GetProductsQueryHandler
+final readonly class GetProductsQueryHandler implements QueryHandlerInterface
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,

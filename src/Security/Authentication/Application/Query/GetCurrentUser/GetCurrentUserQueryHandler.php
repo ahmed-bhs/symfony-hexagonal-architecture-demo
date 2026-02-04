@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Security\Authentication\Application\Query\GetCurrentUser;
 
-use App\Security\Authentication\Domain\Port\In\GetCurrentUserUseCaseInterface;
 use App\Security\User\Application\DTO\UserDTO;
 use App\Security\User\Domain\Port\Out\UserRepositoryInterface;
 use App\Security\User\Domain\ValueObject\UserId;
+use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Query Handler: Get Current User
+ * @implements QueryHandlerInterface<GetCurrentUserQuery, UserDTO|null>
  */
 #[AsMessageHandler]
-final readonly class GetCurrentUserQueryHandler implements GetCurrentUserUseCaseInterface
+final readonly class GetCurrentUserQueryHandler implements QueryHandlerInterface
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,

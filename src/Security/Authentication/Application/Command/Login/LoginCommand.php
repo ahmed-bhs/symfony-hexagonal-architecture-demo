@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Security\Authentication\Application\Command\Login;
 
-/**
- * Command: Login
- *
- * Pure DTO with login credentials.
- */
-final readonly class LoginCommand
+use App\Shared\Application\Command\CommandInterface;
+
+final readonly class LoginCommand implements CommandInterface
 {
     public function __construct(
         public string $email,

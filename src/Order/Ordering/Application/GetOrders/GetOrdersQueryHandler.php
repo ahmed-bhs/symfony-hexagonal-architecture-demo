@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Order\Ordering\Application\GetOrders;
 
 use App\Order\Ordering\Domain\Port\Out\OrderRepositoryInterface;
+use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Query Handler.
- *
- * Handles the execution of GetOrdersQuery.
- * Contains the read logic to fetch and return data.
+ * @implements QueryHandlerInterface<GetOrdersQuery, GetOrdersResponse>
  */
 #[AsMessageHandler]
-final readonly class GetOrdersQueryHandler
+final readonly class GetOrdersQueryHandler implements QueryHandlerInterface
 {
     public function __construct(
         private OrderRepositoryInterface $orderRepository,

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Gift\Attribution\Application\Query\GetResidents;
 
-use App\Gift\Attribution\Domain\Port\In\GetResidentsUseCaseInterface;
 use App\Gift\Attribution\Domain\Port\Out\ResidentRepositoryInterface;
+use App\Shared\Application\Query\QueryHandlerInterface;
 use App\Shared\Pagination\Domain\ValueObject\Page;
 use App\Shared\Pagination\Domain\ValueObject\PerPage;
 use App\Shared\Search\Domain\ValueObject\SearchTerm;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @implements QueryHandlerInterface<GetResidentsQuery, GetResidentsResponse>
+ */
 #[AsMessageHandler(bus: 'query.bus')]
-final readonly class GetResidentsQueryHandler implements GetResidentsUseCaseInterface
+final readonly class GetResidentsQueryHandler implements QueryHandlerInterface
 {
     public function __construct(
         private ResidentRepositoryInterface $residentRepository,

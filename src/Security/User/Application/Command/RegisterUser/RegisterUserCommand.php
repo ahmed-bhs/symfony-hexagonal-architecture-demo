@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Security\User\Application\Command\RegisterUser;
 
-/**
- * Command: Register User
- *
- * Pure DTO with registration data.
- */
-final readonly class RegisterUserCommand
+use App\Shared\Application\Command\CommandInterface;
+
+final readonly class RegisterUserCommand implements CommandInterface
 {
     public function __construct(
         public string $email,

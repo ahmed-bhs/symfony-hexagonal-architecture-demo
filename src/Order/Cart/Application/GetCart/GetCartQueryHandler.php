@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Order\Cart\Application\GetCart;
 
+use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Query Handler.
- *
- * Handles the execution of GetCartQuery.
- * Contains the read logic to fetch and return data.
+ * @implements QueryHandlerInterface<GetCartQuery, GetCartResponse>
  */
 #[AsMessageHandler]
-final readonly class GetCartQueryHandler
+final readonly class GetCartQueryHandler implements QueryHandlerInterface
 {
     public function __construct(
         // Inject your dependencies here (repositories, services, etc.)

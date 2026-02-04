@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Gift\Request\Application\Command\SubmitGiftRequest;
 
-final readonly class SubmitGiftRequestCommand
+use App\Shared\Application\Command\CommandInterface;
+
+final readonly class SubmitGiftRequestCommand implements CommandInterface
 {
     public function __construct(
         public string $requesterName,

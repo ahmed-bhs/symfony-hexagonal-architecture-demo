@@ -20,6 +20,18 @@ services:
     # Port → Adapter bindings (Hexagonal Architecture)
     # These bindings connect Domain ports (interfaces) to Infrastructure adapters (implementations)
 
+    # Command Bus Port (Shared)
+    App\Shared\Domain\Port\Out\CommandBusInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Bus\MessengerCommandBus
+        arguments:
+            $commandBus: '@command.bus'
+
+    # Query Bus Port (Shared)
+    App\Shared\Domain\Port\Out\QueryBusInterface:
+        class: App\Shared\Infrastructure\Adapter\Out\Bus\MessengerQueryBus
+        arguments:
+            $queryBus: '@query.bus'
+
     # ID Generation Port (Shared)
     App\Shared\Domain\Port\Out\IdGeneratorInterface:
         class: App\Shared\Infrastructure\Adapter\Out\Generator\UuidV7Generator
