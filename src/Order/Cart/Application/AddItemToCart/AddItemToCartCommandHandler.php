@@ -9,11 +9,15 @@ use App\Order\Cart\Domain\Port\Out\CartRepositoryInterface;
 use App\Order\Catalog\Domain\Exception\InsufficientStockException;
 use App\Order\Catalog\Domain\Exception\ProductNotFoundException;
 use App\Order\Catalog\Domain\Port\Out\ProductRepositoryInterface;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @implements CommandHandlerInterface<AddItemToCartCommand, void>
+ */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class AddItemToCartCommandHandler
+final readonly class AddItemToCartCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private CartRepositoryInterface $cartRepository,

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Gift\Attribution\Application\Command\AttributeGift;
 
 use App\Gift\Attribution\Domain\Model\GiftAttribution;
-use App\Gift\Attribution\Domain\Port\In\AttributeGiftUseCaseInterface;
 use App\Gift\Attribution\Domain\Port\Out\GiftAttributionRepositoryInterface;
 use App\Gift\Attribution\Domain\Port\Out\GiftRepositoryInterface;
 use App\Gift\Attribution\Domain\Port\Out\ResidentRepositoryInterface;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -27,9 +27,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * 4. Create attribution with full context (for domain event)
  * 5. Persist both gift (updated stock) and attribution
  * 6. Domain events published automatically by infrastructure listener
+ *
+ * @implements CommandHandlerInterface<AttributeGiftCommand, void>
  */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class AttributeGiftCommandHandler implements AttributeGiftUseCaseInterface
+final readonly class AttributeGiftCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private IdGeneratorInterface $idGenerator,

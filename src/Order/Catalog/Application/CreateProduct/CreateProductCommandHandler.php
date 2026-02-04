@@ -6,11 +6,15 @@ namespace App\Order\Catalog\Application\CreateProduct;
 
 use App\Order\Catalog\Domain\Model\Product;
 use App\Order\Catalog\Domain\Port\Out\ProductRepositoryInterface;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @implements CommandHandlerInterface<CreateProductCommand, void>
+ */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class CreateProductCommandHandler
+final readonly class CreateProductCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,

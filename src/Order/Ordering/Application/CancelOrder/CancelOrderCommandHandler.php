@@ -6,10 +6,14 @@ namespace App\Order\Ordering\Application\CancelOrder;
 
 use App\Order\Ordering\Domain\Exception\OrderNotFoundException;
 use App\Order\Ordering\Domain\Port\Out\OrderRepositoryInterface;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @implements CommandHandlerInterface<CancelOrderCommand, void>
+ */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class CancelOrderCommandHandler
+final readonly class CancelOrderCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private OrderRepositoryInterface $orderRepository,

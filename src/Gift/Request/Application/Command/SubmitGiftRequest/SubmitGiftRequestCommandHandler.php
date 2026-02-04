@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Gift\Request\Application\Command\SubmitGiftRequest;
 
 use App\Gift\Request\Domain\Model\GiftRequest;
-use App\Gift\Request\Domain\Port\In\SubmitGiftRequestUseCaseInterface;
 use App\Gift\Request\Domain\Port\Out\GiftRequestRepositoryInterface;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -17,9 +17,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * - Depends only on domain ports (interfaces)
  * - Validation done by ValidationMiddleware before handler
  * - Domain events published automatically by infrastructure listener
+ *
+ * @implements CommandHandlerInterface<SubmitGiftRequestCommand, void>
  */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class SubmitGiftRequestCommandHandler implements SubmitGiftRequestUseCaseInterface
+final readonly class SubmitGiftRequestCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private IdGeneratorInterface $idGenerator,

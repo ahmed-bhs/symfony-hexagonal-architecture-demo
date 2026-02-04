@@ -13,11 +13,15 @@ use App\Order\Ordering\Domain\Model\Order;
 use App\Order\Ordering\Domain\Model\OrderItem;
 use App\Order\Ordering\Domain\Port\Out\OrderRepositoryInterface;
 use App\Order\Ordering\Domain\ValueObject\ShippingAddress;
+use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Port\Out\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @implements CommandHandlerInterface<PlaceOrderCommand, void>
+ */
 #[AsMessageHandler(bus: 'command.bus')]
-final readonly class PlaceOrderCommandHandler
+final readonly class PlaceOrderCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
         private CartRepositoryInterface $cartRepository,
